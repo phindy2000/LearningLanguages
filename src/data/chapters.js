@@ -1,0 +1,62 @@
+/** Story chapters. Scenes reference phrase IDs instead of duplicating language content. */
+export const chapters=[
+    {id:'morning',icon:'🌤️',title:'Khởi đầu ngày mới',subtitle:'Chào hỏi và rủ đi cà phê',scenes:[
+      {type:'match',focus:'p01',source:'en',options:['p03','p01','p05','p07'],title:'Gặp Anna',context:'Minh gặp Anna trước giờ làm.',visual:'👋',speaker:'Anna',avatar:'👩'},
+      {type:'reply',line:'p01',focus:'p02',options:['p02','p10','p14','p41'],title:'Trả lời lời chào',context:'Phản hồi tự nhiên và hỏi lại.',visual:'🙂',speaker:'Anna',avatar:'👩'},
+      {type:'listen',focus:'p03',listenLang:'en',optionLang:'zh',options:['p03','p05','p17','p29'],title:'Chuyện tối qua',context:'Nghe câu hỏi của Anna.',visual:'🌙',speaker:'Anna',avatar:'👩'},
+      {type:'match',focus:'p04',source:'zh',options:['p04','p06','p18','p34'],title:'Một giấc ngủ ngon',context:'Chọn câu tiếng Anh tương ứng.',visual:'😴',speaker:'Minh',avatar:'👨'},
+      {type:'order',focus:'p05',orderLang:'en',chunks:['Shall','we','get','some','coffee','before','work?'],title:'Rủ đi cà phê',context:'Sắp xếp lời đề nghị.',visual:'☕',speaker:'Minh',avatar:'👨'},
+      {type:'reply',line:'p05',focus:'p06',options:['p06','p21','p24','p36'],title:'Đồng ý',context:'Anna phản hồi lời rủ.',visual:'👍',speaker:'Minh',avatar:'👨'}]},
+    {id:'cafe',icon:'☕',title:'Tại quán cà phê',subtitle:'Gọi món và thanh toán',scenes:[
+      {type:'listen',focus:'p07',listenLang:'en',optionLang:'zh',options:['p07','p09','p11','p32'],title:'Nhân viên hỏi món',context:'Nghe câu hỏi tại quầy.',visual:'🥐',speaker:'Staff',avatar:'🧑‍🍳'},
+      {type:'order',focus:'p08',orderLang:'en',chunks:["I'd",'like','a','cup','of','coffee,','please.'],title:'Gọi một ly cà phê',context:'Nói lịch sự và đầy đủ.',visual:'🥤',speaker:'Minh',avatar:'👨'},
+      {type:'match',focus:'p09',source:'zh',options:['p07','p09','p11','p12'],title:'Gọi thêm món',context:'Chọn câu tiếng Anh phù hợp.',visual:'➕',speaker:'Staff',avatar:'🧑‍🍳'},
+      {type:'reply',line:'p09',focus:'p10',options:['p10','p08','p14','p18'],title:'Kết thúc gọi món',context:'Minh không cần gọi thêm.',visual:'✅',speaker:'Staff',avatar:'🧑‍🍳'},
+      {type:'match',focus:'p11',source:'en',options:['p11','p12','p42','p43'],title:'Xin hóa đơn',context:'Chọn câu tiếng Trung tương ứng.',visual:'🧾',speaker:'Minh',avatar:'👨'},
+      {type:'order',focus:'p12',orderLang:'zh',chunks:['我','可以','刷卡','吗？'],title:'Thanh toán bằng thẻ',context:'Sắp xếp câu tiếng Trung.',visual:'💳',speaker:'Minh',avatar:'👨'}]},
+    {id:'commute',icon:'🚇',title:'Đi lại trong thành phố',subtitle:'Chỗ ngồi, tuyến tàu và thời gian',scenes:[
+      {type:'match',focus:'p13',source:'en',options:['p13','p15','p17','p45'],title:'Tìm chỗ ngồi',context:'Minh lên tàu điện đông người.',visual:'💺',speaker:'Minh',avatar:'👨'},
+      {type:'reply',line:'p13',focus:'p14',options:['p14','p10','p21','p41'],title:'Mời ngồi',context:'Một hành khách trả lời.',visual:'🙋',speaker:'Minh',avatar:'👨'},
+      {type:'listen',focus:'p15',listenLang:'zh',optionLang:'en',options:['p15','p17','p37','p45'],title:'Hỏi tuyến tàu',context:'Nghe câu tiếng Trung.',visual:'🗺️',speaker:'Minh',avatar:'👨'},
+      {type:'order',focus:'p16',orderLang:'en',chunks:['Take','Line','Two','and','get','off','at','Central','Station.'],title:'Chỉ đường',context:'Sắp xếp hướng dẫn đi tàu.',visual:'🚉',speaker:'Passenger',avatar:'🧑'},
+      {type:'match',focus:'p17',source:'zh',options:['p17','p18','p22','p43'],title:'Hỏi thời gian',context:'Chọn câu tiếng Anh tương ứng.',visual:'⏱️',speaker:'Minh',avatar:'👨'},
+      {type:'reply',line:'p17',focus:'p18',options:['p18','p16','p22','p48'],title:'Ước lượng chuyến đi',context:'Hành khách trả lời Minh.',visual:'20',speaker:'Minh',avatar:'👨'}]},
+    {id:'office',icon:'💼',title:'Một ngày tại công ty',subtitle:'Họp, báo cáo và nhận việc',scenes:[
+      {type:'match',focus:'p19',source:'en',options:['p19','p23','p27','p29'],title:'Bắt đầu cuộc họp',context:'Quản lý mở cuộc họp đầu ngày.',visual:'🕘',speaker:'Manager',avatar:'🧑‍💼'},
+      {type:'listen',focus:'p20',listenLang:'en',optionLang:'zh',options:['p20','p22','p24','p27'],title:'Yêu cầu báo cáo',context:'Nghe thời hạn quản lý đưa ra.',visual:'📄',speaker:'Manager',avatar:'🧑‍💼'},
+      {type:'reply',line:'p20',focus:'p21',options:['p21','p23','p26','p28'],title:'Xin nhắc lại',context:'Minh chưa nghe rõ.',visual:'🔁',speaker:'Manager',avatar:'🧑‍💼'},
+      {type:'match',focus:'p22',source:'zh',options:['p22','p24','p27','p48'],title:'Giờ họp',context:'Chọn câu tiếng Anh tương ứng.',visual:'📅',speaker:'Anna',avatar:'👩'},
+      {type:'order',focus:'p23',orderLang:'en',chunks:['I','agree','with','this','plan.'],title:'Đồng ý phương án',context:'Sắp xếp phản hồi trong cuộc họp.',visual:'✅',speaker:'Minh',avatar:'👨'},
+      {type:'reply',line:'p20',focus:'p24',options:['p24','p18','p28','p41'],title:'Cam kết gửi báo cáo',context:'Minh xác nhận thời gian gửi.',visual:'📧',speaker:'Manager',avatar:'🧑‍💼'},
+      {type:'match',focus:'p25',source:'en',options:['p21','p25','p26','p32'],title:'Yêu cầu giải thích',context:'Một điểm trong báo cáo chưa rõ.',visual:'❓',speaker:'Minh',avatar:'👨'},
+      {type:'reply',line:'p25',focus:'p26',options:['p26','p23','p27','p34'],title:'Kiểm tra dữ liệu',context:'Anna cần xem số liệu trước.',visual:'📊',speaker:'Minh',avatar:'👨'},
+      {type:'listen',focus:'p27',listenLang:'zh',optionLang:'en',options:['p22','p24','p27','p28'],title:'Thời hạn thứ Sáu',context:'Nghe yêu cầu của nhóm.',visual:'⏳',speaker:'Manager',avatar:'🧑‍💼'},
+      {type:'reply',line:'p27',focus:'p28',options:['p28','p21','p24','p36'],title:'Nhận nhiệm vụ',context:'Minh chủ động phụ trách.',visual:'🙌',speaker:'Manager',avatar:'🧑‍💼'}]},
+    {id:'lunch',icon:'🍜',title:'Ăn trưa cùng đồng nghiệp',subtitle:'Chọn quán và yêu cầu món',scenes:[
+      {type:'match',focus:'p29',source:'en',options:['p29','p31','p32','p37'],title:'Rủ đi ăn trưa',context:'Anna rủ Minh sau cuộc họp.',visual:'🍱',speaker:'Anna',avatar:'👩'},
+      {type:'reply',line:'p29',focus:'p30',options:['p30','p06','p10','p18'],title:'Chọn địa điểm',context:'Minh đồng ý và hỏi đi đâu.',visual:'📍',speaker:'Anna',avatar:'👩'},
+      {type:'listen',focus:'p31',listenLang:'en',optionLang:'zh',options:['p31','p33','p38','p45'],title:'Một quán gần công ty',context:'Nghe gợi ý của Anna.',visual:'🏢',speaker:'Anna',avatar:'👩'},
+      {type:'order',focus:'p32',orderLang:'en',chunks:['What','do','you','recommend?'],title:'Hỏi món gợi ý',context:'Minh chưa biết chọn món.',visual:'📖',speaker:'Minh',avatar:'👨'},
+      {type:'reply',line:'p32',focus:'p33',options:['p33','p34','p35','p36'],title:'Món phổ biến',context:'Nhân viên giới thiệu món.',visual:'🍲',speaker:'Minh',avatar:'👨'},
+      {type:'match',focus:'p34',source:'zh',options:['p06','p33','p34','p36'],title:'Món ăn ngon',context:'Chọn câu tiếng Anh tương ứng.',visual:'😋',speaker:'Minh',avatar:'👨'},
+      {type:'match',focus:'p35',source:'en',options:['p35','p36','p42','p47'],title:'Thông báo dị ứng',context:'Minh cần nói rõ với nhân viên.',visual:'⚠️',speaker:'Minh',avatar:'👨'},
+      {type:'order',focus:'p36',orderLang:'zh',chunks:['请','少放','一点','辣。'],title:'Giảm độ cay',context:'Sắp xếp yêu cầu bằng tiếng Trung.',visual:'🌶️',speaker:'Minh',avatar:'👨'}]},
+    {id:'hotel',icon:'🏨',title:'Khách sạn trong chuyến công tác',subtitle:'Taxi, nhận phòng và dịch vụ',scenes:[
+      {type:'listen',focus:'p37',listenLang:'en',optionLang:'zh',options:['p17','p32','p37','p45'],title:'Tài xế hỏi điểm đến',context:'Minh vừa rời nhà ga.',visual:'🚕',speaker:'Driver',avatar:'🧑‍✈️'},
+      {type:'reply',line:'p37',focus:'p38',options:['p38','p16','p31','p44'],title:'Đến khách sạn',context:'Minh đưa địa chỉ cho tài xế.',visual:'📌',speaker:'Driver',avatar:'🧑‍✈️'},
+      {type:'match',focus:'p39',source:'en',options:['p39','p42','p43','p44'],title:'Nhận phòng',context:'Minh nói với lễ tân.',visual:'🛎️',speaker:'Minh',avatar:'👨'},
+      {type:'listen',focus:'p40',listenLang:'zh',optionLang:'en',options:['p39','p40','p42','p47'],title:'Kiểm tra hộ chiếu',context:'Nghe yêu cầu của lễ tân.',visual:'🛂',speaker:'Receptionist',avatar:'👩‍💼'},
+      {type:'reply',line:'p40',focus:'p41',options:['p41','p14','p21','p30'],title:'Đưa hộ chiếu',context:'Minh phản hồi lịch sự.',visual:'📕',speaker:'Receptionist',avatar:'👩‍💼'},
+      {type:'match',focus:'p42',source:'en',options:['p09','p12','p42','p43'],title:'Hỏi về bữa sáng',context:'Minh kiểm tra dịch vụ phòng.',visual:'🥐',speaker:'Minh',avatar:'👨'},
+      {type:'order',focus:'p43',orderLang:'en',chunks:['What','time','is','check-out?'],title:'Giờ trả phòng',context:'Sắp xếp câu hỏi.',visual:'🕚',speaker:'Minh',avatar:'👨'},
+      {type:'order',focus:'p44',orderLang:'zh',chunks:['您能','帮我','叫一辆','出租车','吗？'],title:'Gọi taxi',context:'Minh chuẩn bị ra sân bay.',visual:'☎️',speaker:'Minh',avatar:'👨'}]},
+    {id:'airport',icon:'✈️',title:'Tại sân bay',subtitle:'Làm thủ tục và lên máy bay',scenes:[
+      {type:'match',focus:'p45',source:'en',options:['p15','p37','p45','p49'],title:'Tìm quầy làm thủ tục',context:'Minh đến nhà ga quốc tế.',visual:'🧭',speaker:'Minh',avatar:'👨'},
+      {type:'listen',focus:'p46',listenLang:'en',optionLang:'zh',options:['p40','p46','p47','p50'],title:'Cân hành lý',context:'Nhân viên yêu cầu đặt vali lên cân.',visual:'⚖️',speaker:'Staff',avatar:'🧑‍✈️'},
+      {type:'reply',line:'p46',focus:'p47',options:['p47','p12','p25','p42'],title:'Kiểm tra an ninh',context:'Minh hỏi về máy tính xách tay.',visual:'💻',speaker:'Staff',avatar:'🧑‍✈️'},
+      {type:'match',focus:'p48',source:'zh',options:['p18','p22','p27','p48'],title:'Chuyến bay bị trễ',context:'Chọn câu tiếng Anh tương ứng.',visual:'⏰',speaker:'Staff',avatar:'🧑‍✈️'},
+      {type:'order',focus:'p49',orderLang:'en',chunks:['Which','gate','should','I','go','to?'],title:'Hỏi cửa ra máy bay',context:'Minh xem lại thẻ lên máy bay.',visual:'🎫',speaker:'Minh',avatar:'👨'},
+      {type:'reply',line:'p49',focus:'p50',options:['p50','p16','p24','p44'],title:'Đi tới cửa số 12',context:'Nhân viên chỉ đúng cửa.',visual:'12',speaker:'Minh',avatar:'👨'},
+      {type:'match',focus:'p51',source:'en',options:['p13','p42','p47','p51'],title:'Chọn ghế cửa sổ',context:'Minh hỏi nhân viên tại quầy.',visual:'🪟',speaker:'Minh',avatar:'👨'},
+      {type:'listen',focus:'p52',listenLang:'zh',optionLang:'en',options:['p06','p34','p41','p52'],title:'Lời chúc cuối hành trình',context:'Nghe lời chúc của nhân viên.',visual:'🛫',speaker:'Staff',avatar:'🧑‍✈️'}]}
+  ];

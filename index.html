@@ -1,420 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0f766e" />
-  <title>Lingua Quest — English & 中文</title>
-  <style>
-    :root{
-      --bg:#f5f8f7;
-      --surface:#ffffff;
-      --surface-2:#eaf5f3;
-      --text:#15302d;
-      --muted:#647875;
-      --line:#d9e5e2;
-      --primary:#0f766e;
-      --primary-dark:#0a5a54;
-      --accent:#f59e0b;
-      --danger:#dc4c4c;
-      --success:#138a5b;
-      --shadow:0 18px 45px rgba(24,65,60,.12);
-      --radius:22px;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial,"Noto Sans SC",sans-serif;background:var(--bg);color:var(--text)}
-    button,select{font:inherit}
-    button{cursor:pointer}
-    button:focus-visible,select:focus-visible{outline:3px solid rgba(15,118,110,.28);outline-offset:3px}
-    .app{min-height:100vh;display:grid;grid-template-columns:270px minmax(0,1fr)}
-    .sidebar{background:#0d4743;color:#fff;padding:24px 18px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh}
-    .brand{display:flex;align-items:center;gap:12px;padding:6px 8px}
-    .brand-mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#34d399,#0f766e);display:grid;place-items:center;font-weight:900;font-size:20px;box-shadow:0 10px 24px rgba(0,0,0,.18)}
-    .brand h1{font-size:18px;line-height:1.1;margin:0}.brand small{opacity:.7}
-    .nav-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;opacity:.55;padding:0 10px}
-    .chapter-list{display:grid;gap:9px}
-    .chapter-btn{border:0;background:transparent;color:#dff7f2;text-align:left;padding:13px 14px;border-radius:14px;display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:10px}
-    .chapter-btn:hover{background:rgba(255,255,255,.08)}
-    .chapter-btn.active{background:#fff;color:#0b4d48;box-shadow:0 8px 20px rgba(0,0,0,.16)}
-    .chapter-icon{font-size:20px}.chapter-name{font-weight:760;font-size:14px}.chapter-meta{font-size:11px;opacity:.72;margin-top:2px}.chapter-progress{font-size:12px;font-weight:800}
-    .sidebar-foot{margin-top:auto;background:rgba(255,255,255,.08);padding:14px;border-radius:16px;font-size:12px;line-height:1.55;color:#d6f0ec}
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#0f766e" name="theme-color"/>
+<title>Lingua Quest — English × 中文</title>
 
-    .main{min-width:0;padding:22px 26px 36px}
-    .topbar{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-    .mobile-menu{display:none;border:0;background:var(--surface);width:44px;height:44px;border-radius:13px;box-shadow:0 8px 22px rgba(24,65,60,.09)}
-    .stats{display:flex;gap:10px;align-items:center;margin-left:auto}
-    .stat{background:var(--surface);border:1px solid var(--line);height:44px;padding:0 14px;border-radius:13px;display:flex;align-items:center;gap:8px;font-weight:800;box-shadow:0 7px 20px rgba(24,65,60,.06)}
-    .stat small{color:var(--muted);font-weight:650}
-    .voice-panel{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:6px 8px 6px 11px;color:var(--muted);font-size:12px}
-    .voice-panel select{border:0;background:transparent;max-width:170px;color:var(--text);font-weight:700;outline:0}
-
-    .game-shell{max-width:980px;margin:0 auto}
-    .progress-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin-bottom:16px}
-    .progress-track{height:10px;background:#dce8e5;border-radius:999px;overflow:hidden}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#14b8a6,#0f766e);border-radius:inherit;transition:width .35s ease}
-    .scene-count{font-size:13px;color:var(--muted);font-weight:750}
-    .story-card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);min-height:640px;display:grid;grid-template-rows:auto 1fr auto}
-    .scene-head{padding:22px 24px 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)}
-    .scene-visual{width:64px;height:64px;border-radius:19px;display:grid;place-items:center;font-size:34px;background:linear-gradient(145deg,#d9f4ee,#bce8df)}
-    .scene-head h2{margin:0 0 4px;font-size:22px}.scene-head p{margin:0;color:var(--muted);font-size:14px}
-    .mode-tag{margin-left:auto;background:var(--surface-2);color:var(--primary-dark);padding:8px 11px;border-radius:10px;font-size:12px;font-weight:800}
-
-    .game-body{padding:24px;display:grid;gap:18px;align-content:start}
-    .speaker-line{display:flex;gap:13px;align-items:flex-start}
-    .avatar{width:46px;height:46px;border-radius:15px;background:#163f3b;color:white;display:grid;place-items:center;font-size:23px;flex:none}
-    .bubble{max-width:760px;background:#edf6f4;border-radius:5px 20px 20px 20px;padding:16px 18px;line-height:1.55}
-    .bubble strong{display:block;margin-bottom:3px;font-size:13px;color:var(--primary-dark)}
-    .question-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.11em;font-weight:900;margin-top:2px}
-    .phrase-panel{border:1px solid var(--line);border-radius:20px;padding:18px;background:#fff;display:grid;gap:13px}
-    .phrase-row{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center}
-    .lang{width:36px;height:28px;border-radius:8px;display:grid;place-items:center;background:#eff5f4;color:var(--primary-dark);font-weight:900;font-size:11px}
-    .phrase-main{font-size:20px;font-weight:820;line-height:1.35}.phrase-sub{color:var(--muted);font-size:13px;margin-top:3px}
-    .speak-btn{border:0;background:var(--primary);color:#fff;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:18px;box-shadow:0 8px 18px rgba(15,118,110,.2)}
-    .speak-btn:hover{background:var(--primary-dark)}
-    .listen-mask{filter:blur(7px);user-select:none;opacity:.62}.listen-mask.revealed{filter:none;opacity:1}
-    .choices{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-    .choice{border:1.5px solid var(--line);background:#fff;border-radius:15px;padding:14px 15px;text-align:left;min-height:62px;color:var(--text);font-weight:690;transition:.18s ease;display:flex;align-items:center;gap:11px}
-    .choice:hover:not(:disabled){border-color:#78bcb4;transform:translateY(-1px);box-shadow:0 8px 18px rgba(24,65,60,.07)}
-    .choice-index{width:28px;height:28px;border-radius:9px;background:#edf3f2;display:grid;place-items:center;font-size:12px;font-weight:900;flex:none}
-    .choice.correct{border-color:#41a77c;background:#ebf8f1;color:#0c6847}.choice.wrong{border-color:#e58989;background:#fff0f0;color:#9d2525}
-    .feedback{display:none;border-radius:16px;padding:14px 16px;line-height:1.5;font-size:14px}.feedback.show{display:block}.feedback.ok{background:#eaf8f0;color:#0c6847}.feedback.bad{background:#fff0f0;color:#922b2b}
-    .word-bank,.answer-zone{display:flex;gap:9px;flex-wrap:wrap;min-height:56px;padding:11px;border:1.5px dashed #bfd1ce;border-radius:15px;background:#f9fbfb}
-    .word-chip{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 12px;font-weight:750;box-shadow:0 4px 10px rgba(24,65,60,.06)}.word-chip:disabled{opacity:.32}.answer-zone .word-chip{background:#e9f7f4;border-color:#9bd2c9}
-    .hint{color:var(--muted);font-size:13px}
-
-    .game-footer{padding:17px 24px;border-top:1px solid var(--line);display:flex;align-items:center;gap:11px;background:#fbfdfc}
-    .secondary,.primary{border:0;border-radius:14px;padding:12px 17px;font-weight:850}
-    .secondary{background:#e8f0ee;color:#315854}.primary{background:var(--primary);color:#fff;min-width:130px;margin-left:auto;box-shadow:0 8px 20px rgba(15,118,110,.18)}.primary:disabled{opacity:.4;cursor:not-allowed}.primary:hover:not(:disabled){background:var(--primary-dark)}
-    .mini-note{font-size:12px;color:var(--muted)}
-
-    .complete{display:none;text-align:center;place-items:center;padding:48px 24px}.complete.show{display:grid}.complete-icon{width:104px;height:104px;border-radius:30px;background:#e4f7f1;display:grid;place-items:center;font-size:58px;margin-bottom:17px}.complete h2{font-size:30px;margin:0 0 8px}.complete p{color:var(--muted);max-width:520px;line-height:1.6}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:22px 0;width:min(560px,100%)}.result-item{background:#f0f6f5;border-radius:15px;padding:15px}.result-item b{display:block;font-size:22px}.result-item span{font-size:12px;color:var(--muted)}
-    .toast{position:fixed;right:22px;bottom:22px;background:#173d39;color:#fff;padding:13px 16px;border-radius:13px;box-shadow:0 16px 35px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translateY(0);opacity:1}
-
-    @media (max-width:900px){
-      .app{grid-template-columns:1fr}.sidebar{position:fixed;z-index:30;inset:0 auto 0 0;width:280px;transform:translateX(-102%);transition:.25s}.sidebar.open{transform:translateX(0)}.mobile-menu{display:grid;place-items:center}.main{padding:17px}.voice-panel{display:none}.story-card{min-height:660px}.choices{grid-template-columns:1fr}
-    }
-    @media (max-width:560px){
-      .main{padding:12px}.topbar{margin-bottom:13px}.stats{gap:6px}.stat{height:40px;padding:0 10px;font-size:13px}.stat small{display:none}.story-card{border-radius:21px;min-height:calc(100vh - 102px)}.scene-head{padding:16px}.scene-visual{width:52px;height:52px;font-size:28px}.scene-head h2{font-size:18px}.mode-tag{display:none}.game-body{padding:17px}.phrase-main{font-size:17px}.phrase-panel{padding:14px}.game-footer{padding:13px 16px;position:sticky;bottom:0}.mini-note{display:none}.result-grid{grid-template-columns:1fr 1fr}.result-item:last-child{grid-column:1/-1}
-    }
-  </style>
-</head>
+<link href="assets/css/tokens.css" rel="stylesheet"/><link href="assets/css/layout.css" rel="stylesheet"/><link href="assets/css/components.css" rel="stylesheet"/><link href="assets/css/responsive.css" rel="stylesheet"/><meta content="Lingua Quest modular English-Chinese learning web app." name="description"/></head>
 <body>
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-mark">LQ</div>
-        <div><h1>Lingua Quest</h1><small>English × 中文</small></div>
-      </div>
-      <div>
-        <div class="nav-title">Câu chuyện</div>
-        <div class="chapter-list" id="chapterList"></div>
-      </div>
-      <div class="sidebar-foot">
-        <b>Giọng đọc</b><br>
-        Ứng dụng ưu tiên voice có tên “Dumpbot”. Nếu thiết bị không cung cấp, hệ thống tự dùng voice tiếng Anh hoặc Trung gần nhất.
-      </div>
-    </aside>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<div class="brand"><div class="brand-mark">LQ</div><div><h1>Lingua Quest</h1><small>English × 中文</small></div></div>
+<div>
+<div class="nav-title">Chức năng</div>
+<nav class="app-nav">
+<button class="nav-btn active" data-view="story"><span class="ico">🎮</span>Game Story</button>
+<button class="nav-btn" data-view="lookup"><span class="ico">🔎</span>Tra cứu</button>
+<button class="nav-btn" data-view="translate"><span class="ico">⇄</span>Dịch Anh–Trung</button>
+<button class="nav-btn" data-view="inventory"><span class="ico">🎒</span>Inventory <span class="count" id="inventoryNavCount">0</span></button>
+</nav>
+</div>
+<div id="chapterNavWrap">
+<div class="nav-title">Chương Story</div>
+<div class="chapter-list" id="chapterList"></div>
+</div>
+<div class="sidebar-rank">
+<div class="rank-label">Learner rank</div><div class="rank-name" id="rankName">Starter</div>
+<div class="rank-track"><div class="rank-fill" id="rankFill"></div></div><div class="rank-next" id="rankNext">0 / 150 XP</div>
+</div>
+<div class="sidebar-foot">Dữ liệu tiến độ và Inventory được lưu trong trình duyệt hiện tại. Giọng đọc ưu tiên voice có tên Google, sau đó dùng voice hệ thống.</div>
+</aside>
+<main class="main">
+<header class="topbar">
+<button aria-label="Mở menu" class="mobile-menu" id="menuBtn">☰</button>
+<div class="view-title"><h2 id="viewHeading">Game Story</h2><p id="viewSubheading">Học câu giao tiếp theo tình huống nối tiếp</p></div>
+<div class="voice-panel"><span>EN</span><select aria-label="Giọng tiếng Anh" id="voiceEn"></select></div>
+<div class="voice-panel"><span>中文</span><select aria-label="Giọng tiếng Trung" id="voiceZh"></select></div>
+<div class="stats"><div class="stat">🔥 <span id="streak">0</span><small>chuỗi</small></div><div class="stat">⭐ <span id="xp">0</span><small>XP</small></div><div class="stat">❤️ <span id="hearts">3</span></div></div>
+</header>
+<section class="view active" id="storyView">
+<div class="page-shell">
+<div class="progress-row"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="scene-count" id="sceneCount">1 / 1</div></div>
+<article class="story-card" id="storyCard">
+<header class="scene-head"><div class="scene-visual" id="sceneVisual">☕</div><div><h2 id="sceneTitle"></h2><p id="sceneContext"></p></div><div class="mode-tag" id="modeTag"></div></header>
+<div class="game-body" id="gameBody"></div>
+<footer class="game-footer" id="gameFooter"><button class="secondary" id="replayBtn">🔊 Nghe lại</button><span class="mini-note" id="voiceStatus">Đang tìm voice…</span><button class="primary" disabled="" id="nextBtn">Kiểm tra</button></footer>
+<div class="complete" id="completeView"><div class="complete-icon">🏆</div><h2>Hoàn thành chương</h2><p id="completeText"></p><div class="result-grid"><div class="result-item"><b id="resultCorrect">0</b><span>Câu đúng</span></div><div class="result-item"><b id="resultXp">0</b><span>XP nhận được</span></div><div class="result-item"><b id="resultAccuracy">0%</b><span>Độ chính xác</span></div></div><button class="primary" id="restartBtn">Học lại chương</button></div>
+</article>
+</div>
+</section>
+<section class="view" id="lookupView">
+<div class="page-shell panel">
+<div class="panel-head"><div><h3>Tra cứu câu và từ vựng</h3><p>Tìm theo tiếng Anh, tiếng Trung hoặc Pinyin; nghe phát âm và thêm thẳng vào Inventory.</p></div></div>
+<div class="panel-body">
+<div class="search-row"><input class="input" id="lookupInput" placeholder="Ví dụ: report, 酒店, kāfēi..."/><select class="select" id="lookupCategory"><option value="all">Tất cả chủ đề</option></select><button class="primary" id="lookupBtn">Tra cứu</button></div>
+<div class="result-summary" id="lookupSummary"></div><div class="lookup-grid" id="lookupResults"></div>
+</div>
+</div>
+</section>
+<section class="view" id="translateView">
+<div class="page-shell panel">
+<div class="panel-head"><div><h3>Dịch Anh–Trung</h3><p>Dịch chính xác trong kho tích hợp; câu ngoài kho sẽ được đánh dấu rõ ràng.</p></div></div>
+<div class="panel-body">
+<div class="translator-grid">
+<div class="translate-side"><label>Văn bản nguồn</label><div class="translate-controls"><select class="select" id="sourceLang"><option value="auto">Tự nhận diện</option><option value="en">English</option><option value="zh">中文</option></select><button class="icon-btn" id="speakSourceBtn" title="Nghe văn bản nguồn">🔊</button></div><textarea class="textarea" id="translateInput" placeholder="Nhập câu tiếng Anh hoặc tiếng Trung..."></textarea></div>
+<div class="swap-wrap"><button class="swap-btn" id="swapLangBtn" title="Đổi chiều dịch">⇄</button></div>
+<div class="translate-side"><label id="targetLangLabel">Bản dịch</label><div class="translation-meta"><span class="quality-tag quality-none" id="translationQuality">Chưa dịch</span><a class="fallback-link" href="#" id="googleTranslateLink" rel="noopener" style="display:none" target="_blank">Mở Google Dịch ↗</a></div><div class="translation-output" id="translationOutput">Bản dịch sẽ xuất hiện tại đây.</div><div class="translation-pinyin" id="translationPinyin"></div><div class="translate-controls"><button class="primary" id="translateBtn">Dịch</button><button class="secondary" id="speakTranslationBtn">🔊 Nghe bản dịch</button><button class="secondary" id="addTranslationBtn">＋ Inventory</button></div></div>
+</div>
+<div class="translator-note"><b>Phạm vi:</b> WebApp không gọi AI hoặc API dịch trả phí. Hệ thống ưu tiên khớp chính xác với kho câu/từ tích hợp, sau đó thử ghép nghĩa từng từ. Nội dung ghép gần đúng luôn được gắn nhãn để tránh hiểu nhầm là bản dịch chuẩn.</div>
+</div>
+</div>
+</section>
+<section class="view" id="inventoryView">
+<div class="page-shell">
+<div class="inventory-summary"><div class="summary-card"><b id="countNew">0</b><span>Mới thêm</span></div><div class="summary-card"><b id="countUnlearned">0</b><span>Chưa thuộc</span></div><div class="summary-card"><b id="countReview">0</b><span>Ôn tập</span></div><div class="summary-card"><b id="countMastered">0</b><span>Đã thuộc</span></div></div>
+<div class="inventory-layout">
+<section class="panel add-panel"><div class="panel-head"><div><h3>Thêm từ/câu mới</h3><p>Mục mới được xếp vào trạng thái “Mới thêm”.</p></div></div><div class="panel-body"><form class="add-form" id="inventoryForm"><input class="input" id="invEn" placeholder="English" required=""/><input class="input" id="invZh" placeholder="中文" required=""/><input class="input" id="invPinyin" placeholder="Pinyin"/><div class="form-row"><input class="input" id="invCategory" placeholder="Chủ đề" value="Tự thêm"/><select class="select" id="invType"><option value="word">Từ vựng</option><option value="phrase">Câu giao tiếp</option></select></div><button class="primary" type="submit">Thêm vào Inventory</button></form></div></section>
+<section class="panel"><div class="panel-head"><div><h3>Kho học cá nhân</h3><p>Đổi trạng thái trực tiếp hoặc mở chế độ ôn nhanh.</p></div></div><div class="panel-body"><div class="inventory-toolbar"><input class="input" id="inventorySearch" placeholder="Tìm trong Inventory..."/><select class="select" id="inventoryStatusFilter"><option value="all">Tất cả trạng thái</option><option value="new">Mới thêm</option><option value="unlearned">Chưa thuộc</option><option value="review">Ôn tập</option><option value="mastered">Đã thuộc</option></select><button class="primary" id="reviewBtn">Ôn nhanh</button></div><div class="inventory-list" id="inventoryList"></div></div></section>
+</div>
+</div>
+</section>
+</main>
+</div>
+<div class="modal-backdrop" id="reviewBackdrop"><div class="review-modal"><div class="review-head"><h3>Ôn nhanh Inventory</h3><span class="mini-note" id="reviewProgress"></span><button class="close-btn" id="closeReviewBtn">✕</button></div><div class="review-card"><div><div class="review-en" id="reviewEn"></div><div class="review-hidden" id="reviewAnswer"><div class="review-zh" id="reviewZh"></div><div class="review-pinyin" id="reviewPinyin"></div></div></div></div><div class="review-controls" id="reviewControls"><button class="review-reveal" id="revealReviewBtn">Hiện đáp án</button></div></div></div>
+<div class="toast" id="toast"></div>
 
-    <main class="main">
-      <div class="topbar">
-        <button class="mobile-menu" id="menuBtn" aria-label="Mở danh sách chương">☰</button>
-        <div class="voice-panel"><span>EN</span><select id="voiceEn" aria-label="Giọng tiếng Anh"></select></div>
-        <div class="voice-panel"><span>中文</span><select id="voiceZh" aria-label="Giọng tiếng Trung"></select></div>
-        <div class="stats">
-          <div class="stat">🔥 <span id="streak">0</span><small>chuỗi</small></div>
-          <div class="stat">⭐ <span id="xp">0</span><small>XP</small></div>
-          <div class="stat">❤️ <span id="hearts">3</span></div>
-        </div>
-      </div>
-
-      <section class="game-shell">
-        <div class="progress-row">
-          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-          <div class="scene-count" id="sceneCount">1 / 1</div>
-        </div>
-
-        <article class="story-card" id="storyCard">
-          <header class="scene-head">
-            <div class="scene-visual" id="sceneVisual">☕</div>
-            <div><h2 id="sceneTitle">Buổi sáng ở quán cà phê</h2><p id="sceneContext">Hãy giúp Minh hoàn thành cuộc trò chuyện.</p></div>
-            <div class="mode-tag" id="modeTag">Chọn đáp án</div>
-          </header>
-
-          <div class="game-body" id="gameBody"></div>
-
-          <footer class="game-footer" id="gameFooter">
-            <button class="secondary" id="replayBtn">🔊 Nghe lại</button>
-            <span class="mini-note" id="voiceStatus">Đang tìm Google voice…</span>
-            <button class="primary" id="nextBtn" disabled>Kiểm tra</button>
-          </footer>
-
-          <div class="complete" id="completeView">
-            <div class="complete-icon">🏆</div>
-            <h2>Hoàn thành chương</h2>
-            <p id="completeText"></p>
-            <div class="result-grid">
-              <div class="result-item"><b id="resultCorrect">0</b><span>Câu đúng</span></div>
-              <div class="result-item"><b id="resultXp">0</b><span>XP nhận được</span></div>
-              <div class="result-item"><b id="resultAccuracy">0%</b><span>Độ chính xác</span></div>
-            </div>
-            <button class="primary" id="restartBtn" style="margin:0">Học lại chương</button>
-          </div>
-        </article>
-      </section>
-    </main>
-  </div>
-  <div class="toast" id="toast"></div>
-
-<script>
-(() => {
-  'use strict';
-
-  const storage = {
-    get(key, fallback=''){ try { const v=window.localStorage.getItem(key); return v===null?fallback:v; } catch(e) { return fallback; } },
-    set(key, value){ try { window.localStorage.setItem(key, value); } catch(e) {} }
-  };
-
-  const chapters = [
-    {
-      id: 'cafe', icon: '☕', title: 'Buổi sáng & cà phê', subtitle: 'Chào hỏi, gọi món',
-      scenes: [
-        { type:'meaning', visual:'🌤️', title:'Gặp đồng nghiệp', context:'Minh gặp Anna trước cửa quán cà phê.', speaker:'Anna', avatar:'👩', line:'Good morning! How are you today?', en:'Good morning! How are you today?', zh:'早上好！你今天怎么样？', pinyin:'Zǎoshang hǎo! Nǐ jīntiān zěnmeyàng?', vi:'Chào buổi sáng! Hôm nay bạn thế nào?', prompt:'Câu này có nghĩa là gì?', options:['Chào buổi sáng! Hôm nay bạn thế nào?','Chúc ngủ ngon! Ngày mai gặp lại.','Bạn muốn uống cà phê không?','Hôm nay bạn đi đâu?'], answer:0, tip:'“How are you today?” dùng để hỏi thăm tình trạng của người đối diện.' },
-        { type:'reply', visual:'🙂', title:'Trả lời lời chào', context:'Anna đang chờ câu trả lời của Minh.', speaker:'Anna', avatar:'👩', line:'Good morning! How are you today?', en:'I’m good, thank you. And you?', zh:'我很好，谢谢。你呢？', pinyin:'Wǒ hěn hǎo, xièxie. Nǐ ne?', vi:'Tôi khỏe, cảm ơn. Còn bạn?', prompt:'Chọn câu trả lời phù hợp nhất.', options:['I’m good, thank you. And you? / 我很好，谢谢。你呢？','No, I don’t have it. / 不，我没有。','Turn left here. / 在这里左转。','The bill, please. / 请买单。'], answer:0, tip:'Thêm “And you?” hoặc “你呢？” để hỏi lại một cách tự nhiên.' },
-        { type:'listen', visual:'🥐', title:'Gọi món', context:'Nhân viên hỏi Minh muốn dùng gì. Hãy nghe và chọn đúng câu.', speaker:'Waiter', avatar:'🧑‍🍳', line:'What would you like to order?', en:'What would you like to order?', zh:'您想点什么？', pinyin:'Nín xiǎng diǎn shénme?', vi:'Bạn muốn gọi món gì?', prompt:'Bạn vừa nghe câu nào?', options:['What would you like to order?','Where is the train station?','Could you say that again?','What time is the meeting?'], answer:0, tip:'“Would like” lịch sự hơn “want” trong tình huống gọi món.' },
-        { type:'order', visual:'🥤', title:'Một ly cà phê', context:'Sắp xếp thành câu gọi món lịch sự.', speaker:'Minh', avatar:'👨', line:'', en:'I’d like a cup of coffee, please.', zh:'我想要一杯咖啡，谢谢。', pinyin:'Wǒ xiǎng yào yì bēi kāfēi, xièxie.', vi:'Cho tôi một ly cà phê, cảm ơn.', prompt:'Chạm các từ theo đúng thứ tự.', orderLang:'en', words:['coffee,','I’d','please.','a','like','cup','of'], answerText:"I’d like a cup of coffee, please.", tip:'Cấu trúc: I’d like + món muốn gọi + please.' },
-        { type:'meaning', visual:'💳', title:'Thanh toán', context:'Minh muốn thanh toán trước khi đi làm.', speaker:'Minh', avatar:'👨', line:'Could I have the bill, please?', en:'Could I have the bill, please?', zh:'请给我账单，好吗？', pinyin:'Qǐng gěi wǒ zhàngdān, hǎo ma?', vi:'Cho tôi xin hóa đơn được không?', prompt:'Chọn nghĩa đúng.', options:['Cho tôi xin hóa đơn được không?','Tôi có thể ngồi ở đây không?','Bạn có nhận đặt bàn không?','Cho tôi thêm một ly nước.'], answer:0, tip:'Ở Mỹ thường nói “check”; ở Anh thường nói “bill”.' }
-      ]
-    },
-    {
-      id: 'office', icon: '💼', title: 'Một ngày tại công ty', subtitle: 'Họp, trao đổi công việc',
-      scenes: [
-        { type:'meaning', visual:'🕘', title:'Bắt đầu cuộc họp', context:'Quản lý bắt đầu cuộc họp đầu ngày.', speaker:'Manager', avatar:'🧑‍💼', line:"Let’s get started.", en:"Let’s get started.", zh:'我们开始吧。', pinyin:'Wǒmen kāishǐ ba.', vi:'Chúng ta bắt đầu nhé.', prompt:'Câu này dùng khi nào?', options:['Khi muốn bắt đầu một việc hoặc cuộc họp','Khi muốn kết thúc cuộc họp','Khi xin nghỉ phép','Khi gọi món ăn'], answer:0, tip:'“Let’s…” là cách đề nghị cả nhóm cùng làm điều gì đó.' },
-        { type:'reply', visual:'📄', title:'Xin nhắc lại', context:'Bạn chưa nghe rõ yêu cầu của quản lý.', speaker:'Manager', avatar:'🧑‍💼', line:'Please send me the report before noon.', en:'Could you say that again, please?', zh:'请您再说一遍，好吗？', pinyin:'Qǐng nín zài shuō yí biàn, hǎo ma?', vi:'Bạn có thể nói lại lần nữa được không?', prompt:'Chọn câu phù hợp khi chưa nghe rõ.', options:['Could you say that again, please? / 请您再说一遍，好吗？','I agree with the price. / 我同意这个价格。','I need a taxi. / 我需要出租车。','This tastes good. / 这个很好吃。'], answer:0, tip:'Thêm “please” giúp lời đề nghị lịch sự hơn.' },
-        { type:'listen', visual:'📅', title:'Xác nhận thời gian', context:'Nghe đồng nghiệp nói về lịch họp.', speaker:'Anna', avatar:'👩', line:'The meeting starts at two thirty.', en:'The meeting starts at two thirty.', zh:'会议两点半开始。', pinyin:'Huìyì liǎng diǎn bàn kāishǐ.', vi:'Cuộc họp bắt đầu lúc hai giờ rưỡi.', prompt:'Cuộc họp bắt đầu lúc mấy giờ?', options:['2:30','2:00','3:30','12:30'], answer:0, tip:'“Half past two” cũng có nghĩa là 2:30.' },
-        { type:'order', visual:'✅', title:'Đồng ý phương án', context:'Sắp xếp câu phản hồi trong cuộc họp.', speaker:'Minh', avatar:'👨', line:'', en:'I agree with this plan.', zh:'我同意这个计划。', pinyin:'Wǒ tóngyì zhège jìhuà.', vi:'Tôi đồng ý với kế hoạch này.', prompt:'Chạm các từ theo đúng thứ tự.', orderLang:'en', words:['plan.','agree','this','I','with'], answerText:'I agree with this plan.', tip:'Agree with + người/ý kiến/kế hoạch.' },
-        { type:'reply', visual:'📧', title:'Hẹn gửi tài liệu', context:'Quản lý hỏi khi nào bạn gửi báo cáo.', speaker:'Manager', avatar:'🧑‍💼', line:'When can you send the report?', en:'I’ll send it this afternoon.', zh:'我今天下午发给您。', pinyin:'Wǒ jīntiān xiàwǔ fā gěi nín.', vi:'Tôi sẽ gửi cho bạn vào chiều nay.', prompt:'Chọn câu trả lời rõ ràng nhất.', options:['I’ll send it this afternoon. / 我今天下午发给您。','I sent it last year. / 我去年发了。','I don’t like coffee. / 我不喜欢咖啡。','Please turn right. / 请右转。'], answer:0, tip:'“I’ll…” phù hợp khi cam kết thực hiện ngay hoặc trong tương lai gần.' }
-      ]
-    },
-    {
-      id: 'travel', icon: '✈️', title: 'Đi công tác', subtitle: 'Taxi, khách sạn, nhà hàng',
-      scenes: [
-        { type:'reply', visual:'🚕', title:'Đi taxi', context:'Tài xế hỏi bạn muốn đi đâu.', speaker:'Driver', avatar:'🧑‍✈️', line:'Where would you like to go?', en:'Please take me to this hotel.', zh:'请带我去这家酒店。', pinyin:'Qǐng dài wǒ qù zhè jiā jiǔdiàn.', vi:'Vui lòng đưa tôi đến khách sạn này.', prompt:'Chọn câu trả lời phù hợp.', options:['Please take me to this hotel. / 请带我去这家酒店。','I need more time. / 我需要更多时间。','This is my colleague. / 这是我的同事。','The food is ready. / 饭做好了。'], answer:0, tip:'“Take me to…” là mẫu câu rất thông dụng khi đi taxi.' },
-        { type:'meaning', visual:'🏨', title:'Nhận phòng', context:'Bạn nói chuyện với lễ tân khách sạn.', speaker:'Minh', avatar:'👨', line:'I have a reservation under the name Minh.', en:'I have a reservation under the name Minh.', zh:'我用Minh的名字预订了房间。', pinyin:'Wǒ yòng Minh de míngzi yùdìng le fángjiān.', vi:'Tôi đã đặt phòng dưới tên Minh.', prompt:'“Under the name Minh” nghĩa là gì?', options:['Đặt dưới tên Minh','Phòng ở dưới tầng Minh','Thanh toán cho Minh','Gọi điện cho Minh'], answer:0, tip:'Mẫu “under the name…” thường dùng khi nhận phòng hoặc nhận bàn đã đặt.' },
-        { type:'listen', visual:'🧭', title:'Hỏi đường', context:'Nghe câu hỏi rồi chọn đúng địa điểm.', speaker:'Traveler', avatar:'🧳', line:'Excuse me, where is the train station?', en:'Excuse me, where is the train station?', zh:'请问，火车站在哪里？', pinyin:'Qǐngwèn, huǒchēzhàn zài nǎlǐ?', vi:'Xin hỏi, ga tàu ở đâu?', prompt:'Người nói đang tìm nơi nào?', options:['Ga tàu','Sân bay','Khách sạn','Nhà hàng'], answer:0, tip:'“Excuse me” hoặc “请问” thường đặt đầu câu để mở lời lịch sự.' },
-        { type:'order', visual:'🍜', title:'Món ăn ngon', context:'Sắp xếp câu nhận xét về món ăn.', speaker:'Minh', avatar:'👨', line:'', en:'This dish is very delicious.', zh:'这道菜很好吃。', pinyin:'Zhè dào cài hěn hǎochī.', vi:'Món này rất ngon.', prompt:'Chạm các từ theo đúng thứ tự.', orderLang:'en', words:['delicious.','dish','very','This','is'], answerText:'This dish is very delicious.', tip:'Trong hội thoại tự nhiên, có thể nói ngắn: “This is delicious.”' },
-        { type:'reply', visual:'🛫', title:'Tại sân bay', context:'Nhân viên sân bay hỏi hộ chiếu của bạn.', speaker:'Staff', avatar:'🛂', line:'May I see your passport?', en:'Sure. Here you are.', zh:'当然，给您。', pinyin:'Dāngrán, gěi nín.', vi:'Được chứ. Của bạn đây.', prompt:'Chọn câu phản hồi tự nhiên.', options:['Sure. Here you are. / 当然，给您。','I don’t know this city. / 我不认识这个城市。','The meeting is over. / 会议结束了。','Please bring some water. / 请拿点水。'], answer:0, tip:'“Here you are” dùng khi đưa một vật cho người khác.' }
-      ]
-    }
-  ];
-
-  const state = {
-    chapterIndex: 0, sceneIndex: 0, selected: null, checked: false,
-    hearts: 3, streak: 0, xp: Number(storage.get('lq_xp','0') || 0),
-    correct: 0, attempts: 0, chapterXp: 0, answerWords: [], voices: []
-  };
-
-  const $ = s => document.querySelector(s);
-  const els = {
-    chapterList: $('#chapterList'), sidebar: $('#sidebar'), menuBtn: $('#menuBtn'),
-    progressFill: $('#progressFill'), sceneCount: $('#sceneCount'), sceneVisual: $('#sceneVisual'),
-    sceneTitle: $('#sceneTitle'), sceneContext: $('#sceneContext'), modeTag: $('#modeTag'),
-    gameBody: $('#gameBody'), gameFooter: $('#gameFooter'), nextBtn: $('#nextBtn'), replayBtn: $('#replayBtn'),
-    xp: $('#xp'), streak: $('#streak'), hearts: $('#hearts'), complete: $('#completeView'),
-    storyCard: $('#storyCard'), completeText: $('#completeText'), resultCorrect: $('#resultCorrect'),
-    resultXp: $('#resultXp'), resultAccuracy: $('#resultAccuracy'), restartBtn: $('#restartBtn'),
-    voiceEn: $('#voiceEn'), voiceZh: $('#voiceZh'), voiceStatus: $('#voiceStatus'), toast: $('#toast')
-  };
-
-  const modeNames = {meaning:'Chọn ý nghĩa',reply:'Chọn phản hồi',listen:'Nghe và chọn',order:'Sắp xếp câu'};
-  const savedProgress = JSON.parse(storage.get('lq_progress','{}') || '{}');
-
-  function renderChapters(){
-    els.chapterList.innerHTML = chapters.map((c,i)=>{
-      const done = savedProgress[c.id] || 0;
-      return `<button class="chapter-btn ${i===state.chapterIndex?'active':''}" data-index="${i}">
-        <span class="chapter-icon">${c.icon}</span><span><div class="chapter-name">${c.title}</div><div class="chapter-meta">${c.subtitle}</div></span><span class="chapter-progress">${done}/${c.scenes.length}</span>
-      </button>`;
-    }).join('');
-    els.chapterList.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>startChapter(Number(btn.dataset.index))));
-  }
-
-  function startChapter(index){
-    speechSynthesis.cancel();
-    state.chapterIndex=index; state.sceneIndex=0; state.correct=0; state.attempts=0; state.chapterXp=0;
-    state.hearts=3; state.streak=0; resetSceneState();
-    els.complete.classList.remove('show'); els.gameBody.style.display='grid'; els.gameFooter.style.display='flex';
-    renderChapters(); renderScene(); els.sidebar.classList.remove('open');
-  }
-
-  function resetSceneState(){ state.selected=null; state.checked=false; state.answerWords=[]; }
-
-  function current(){ return chapters[state.chapterIndex].scenes[state.sceneIndex]; }
-
-  function renderScene(){
-    const chapter=chapters[state.chapterIndex], scene=current();
-    const p=((state.sceneIndex)/chapter.scenes.length)*100;
-    els.progressFill.style.width=p+'%'; els.sceneCount.textContent=`${state.sceneIndex+1} / ${chapter.scenes.length}`;
-    els.sceneVisual.textContent=scene.visual; els.sceneTitle.textContent=scene.title; els.sceneContext.textContent=scene.context;
-    els.modeTag.textContent=modeNames[scene.type]; els.nextBtn.textContent='Kiểm tra'; els.nextBtn.disabled=true;
-    els.replayBtn.style.visibility='visible'; updateStats();
-
-    const intro = scene.line ? `<div class="speaker-line"><div class="avatar">${scene.avatar}</div><div class="bubble"><strong>${scene.speaker}</strong>${escapeHtml(scene.line)}</div></div>` : '';
-    const phrase = phrasePanel(scene, scene.type==='listen');
-    let activity='';
-    if(scene.type==='meaning' || scene.type==='reply' || scene.type==='listen') activity=choiceActivity(scene);
-    if(scene.type==='order') activity=orderActivity(scene);
-    els.gameBody.innerHTML = intro + `<div class="question-label">${scene.prompt}</div>` + phrase + activity + `<div class="feedback" id="feedback"></div>`;
-    bindSceneEvents();
-    if(scene.type==='listen') setTimeout(()=>speak(scene.en,'en'),350);
-  }
-
-  function phrasePanel(scene, masked=false){
-    return `<div class="phrase-panel">
-      <div class="phrase-row"><span class="lang">EN</span><div class="${masked?'listen-mask':''}" id="enText"><div class="phrase-main">${escapeHtml(scene.en)}</div><div class="phrase-sub">English</div></div><button class="speak-btn" data-speak="en" aria-label="Nghe tiếng Anh">🔊</button></div>
-      <div class="phrase-row"><span class="lang">中</span><div><div class="phrase-main">${escapeHtml(scene.zh)}</div><div class="phrase-sub">${escapeHtml(scene.pinyin)}</div></div><button class="speak-btn" data-speak="zh" aria-label="Nghe tiếng Trung">🔊</button></div>
-      <div class="phrase-row"><span class="lang">VI</span><div><div class="phrase-main" style="font-size:16px">${masked?'Nghĩa tiếng Việt sẽ hiện sau khi trả lời.':escapeHtml(scene.vi)}</div></div><span></span></div>
-    </div>`;
-  }
-
-  function choiceActivity(scene){
-    return `<div class="choices">${scene.options.map((o,i)=>`<button class="choice" data-choice="${i}"><span class="choice-index">${String.fromCharCode(65+i)}</span><span>${escapeHtml(o)}</span></button>`).join('')}</div>`;
-  }
-
-  function orderActivity(scene){
-    const shuffled=shuffle([...scene.words]); scene._shuffled=shuffled;
-    return `<div class="answer-zone" id="answerZone"><span class="hint">Câu trả lời sẽ xuất hiện tại đây…</span></div><div class="word-bank" id="wordBank">${shuffled.map((w,i)=>`<button class="word-chip" data-word-index="${i}">${escapeHtml(w)}</button>`).join('')}</div>`;
-  }
-
-  function bindSceneEvents(){
-    els.gameBody.querySelectorAll('[data-speak]').forEach(b=>b.addEventListener('click',()=>speak(current()[b.dataset.speak],b.dataset.speak)));
-    els.gameBody.querySelectorAll('[data-choice]').forEach(b=>b.addEventListener('click',()=>{
-      if(state.checked) return;
-      state.selected=Number(b.dataset.choice);
-      els.gameBody.querySelectorAll('[data-choice]').forEach(x=>x.style.borderColor='');
-      b.style.borderColor='#0f766e'; els.nextBtn.disabled=false;
-    }));
-    els.gameBody.querySelectorAll('[data-word-index]').forEach(b=>b.addEventListener('click',()=>addWord(Number(b.dataset.wordIndex))));
-  }
-
-  function addWord(index){
-    if(state.checked || state.answerWords.includes(index)) return;
-    state.answerWords.push(index); refreshOrder(); els.nextBtn.disabled=state.answerWords.length===0;
-  }
-
-  function refreshOrder(){
-    const scene=current(), zone=$('#answerZone'), bank=$('#wordBank');
-    zone.innerHTML=state.answerWords.map((idx,pos)=>`<button class="word-chip" data-answer-pos="${pos}">${escapeHtml(scene._shuffled[idx])}</button>`).join('') || '<span class="hint">Câu trả lời sẽ xuất hiện tại đây…</span>';
-    bank.querySelectorAll('.word-chip').forEach((b,i)=>b.disabled=state.answerWords.includes(i));
-    zone.querySelectorAll('[data-answer-pos]').forEach(b=>b.addEventListener('click',()=>{
-      if(state.checked) return; state.answerWords.splice(Number(b.dataset.answerPos),1); refreshOrder(); els.nextBtn.disabled=state.answerWords.length===0;
-    }));
-  }
-
-  function normalize(s){ return s.replace(/\s+/g,' ').replace(/\s+([,.!?])/g,'$1').trim().toLowerCase(); }
-
-  function checkAnswer(){
-    const scene=current();
-    if(state.checked){ nextScene(); return; }
-    let ok=false;
-    if(scene.type==='order'){
-      const built=state.answerWords.map(i=>scene._shuffled[i]).join(' ');
-      ok=normalize(built)===normalize(scene.answerText);
-    } else ok=state.selected===scene.answer;
-    state.checked=true; state.attempts++;
-    const feedback=$('#feedback');
-    if(ok){
-      state.correct++; state.streak++; const gain=10+Math.min(state.streak*2,10); state.xp+=gain; state.chapterXp+=gain;
-      feedback.className='feedback show ok'; feedback.innerHTML=`<b>Chính xác.</b> ${escapeHtml(scene.tip)} <span style="float:right;font-weight:900">+${gain} XP</span>`;
-      playTone(true);
-    } else {
-      state.hearts=Math.max(0,state.hearts-1); state.streak=0;
-      feedback.className='feedback show bad'; feedback.innerHTML=`<b>Chưa đúng.</b> ${escapeHtml(scene.tip)}`;
-      playTone(false);
-    }
-    if(scene.type!=='order'){
-      els.gameBody.querySelectorAll('[data-choice]').forEach((b,i)=>{ b.disabled=true; if(i===scene.answer)b.classList.add('correct'); else if(i===state.selected)b.classList.add('wrong'); });
-    } else {
-      const zone=$('#answerZone'); zone.style.borderColor=ok?'#41a77c':'#e58989';
-      if(!ok) zone.insertAdjacentHTML('beforeend',`<div style="width:100%;color:#922b2b;font-size:13px;margin-top:4px">Đáp án: <b>${escapeHtml(scene.answerText)}</b></div>`);
-    }
-    const masked=$('#enText'); if(masked) masked.classList.add('revealed');
-    els.nextBtn.disabled=false; els.nextBtn.textContent=state.sceneIndex===chapters[state.chapterIndex].scenes.length-1?'Hoàn thành':'Tiếp tục';
-    storage.set('lq_xp',String(state.xp)); updateStats();
-  }
-
-  function nextScene(){
-    const chapter=chapters[state.chapterIndex];
-    if(state.sceneIndex>=chapter.scenes.length-1){ completeChapter(); return; }
-    state.sceneIndex++; resetSceneState(); renderScene();
-  }
-
-  function completeChapter(){
-    speechSynthesis.cancel(); const chapter=chapters[state.chapterIndex];
-    savedProgress[chapter.id]=chapter.scenes.length; storage.set('lq_progress',JSON.stringify(savedProgress));
-    els.progressFill.style.width='100%'; els.sceneCount.textContent=`${chapter.scenes.length} / ${chapter.scenes.length}`;
-    els.gameBody.style.display='none'; els.gameFooter.style.display='none'; els.complete.classList.add('show');
-    els.completeText.textContent=`Bạn đã hoàn thành “${chapter.title}”. Mở lại chương bất cứ lúc nào để ôn các câu giao tiếp.`;
-    els.resultCorrect.textContent=`${state.correct}/${state.attempts}`; els.resultXp.textContent=state.chapterXp;
-    els.resultAccuracy.textContent=(state.attempts?Math.round(state.correct/state.attempts*100):0)+'%'; renderChapters(); playVictory();
-  }
-
-  function updateStats(){ els.xp.textContent=state.xp; els.streak.textContent=state.streak; els.hearts.textContent=state.hearts; }
-
-  function loadVoices(){
-    state.voices=speechSynthesis.getVoices();
-    const en=rankVoices('en'), zh=rankVoices('zh');
-    fillVoiceSelect(els.voiceEn,en,'en'); fillVoiceSelect(els.voiceZh,zh,'zh');
-    const enGoogle=en.some(v=>/google/i.test(v.name)), zhGoogle=zh.some(v=>/google/i.test(v.name));
-    els.voiceStatus.textContent=enGoogle&&zhGoogle?'Đã nhận Google voice EN & 中文':(enGoogle||zhGoogle?'Có 1 Google voice; ngôn ngữ còn lại dùng dự phòng':'Thiết bị đang dùng voice hệ thống dự phòng');
-  }
-
-  function rankVoices(lang){
-    const prefix=lang==='en'?'en':'zh';
-    return state.voices.filter(v=>v.lang.toLowerCase().startsWith(prefix)).sort((a,b)=>{
-      const score=v=>(/google/i.test(v.name)?100:0)+(/natural|premium|enhanced/i.test(v.name)?20:0)+(v.default?5:0);
-      return score(b)-score(a);
-    });
-  }
-
-  function fillVoiceSelect(select,voices,lang){
-    const prev=storage.get('lq_voice_'+lang,'');
-    select.innerHTML=voices.length?voices.map((v,i)=>`<option value="${escapeAttr(v.name)}" ${v.name===prev?'selected':''}>${/google/i.test(v.name)?'Google · ':''}${escapeHtml(v.name)}</option>`).join(''):'<option value="">Voice mặc định</option>';
-    if(prev && !voices.some(v=>v.name===prev)) select.selectedIndex=0;
-  }
-
-  function selectedVoice(lang){
-    const select=lang==='en'?els.voiceEn:els.voiceZh, name=select.value;
-    return state.voices.find(v=>v.name===name) || rankVoices(lang)[0] || null;
-  }
-
-  function speak(text,lang){
-    if(!text) return; speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text); u.lang=lang==='zh'?'zh-CN':'en-US'; u.rate=lang==='zh'?0.78:0.84; u.pitch=1; u.volume=1;
-    const voice=selectedVoice(lang); if(voice) u.voice=voice;
-    speechSynthesis.speak(u);
-  }
-
-  function playTone(ok){
-    try{ const C=window.AudioContext||window.webkitAudioContext, ctx=new C(), osc=ctx.createOscillator(), gain=ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value=ok?660:210; gain.gain.setValueAtTime(.08,ctx.currentTime); gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.22); osc.start(); osc.stop(ctx.currentTime+.23); }catch(e){}
-  }
-  function playVictory(){ playTone(true); setTimeout(()=>playTone(true),180); }
-  function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
-  function escapeHtml(s){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-  function escapeAttr(s){ return escapeHtml(s); }
-  function toast(msg){ els.toast.textContent=msg; els.toast.classList.add('show'); setTimeout(()=>els.toast.classList.remove('show'),1800); }
-
-  els.nextBtn.addEventListener('click',checkAnswer);
-  els.replayBtn.addEventListener('click',()=>{ const s=current(); speak(s.en,'en'); setTimeout(()=>speak(s.zh,'zh'),Math.max(1500,s.en.length*75)); });
-  els.restartBtn.addEventListener('click',()=>startChapter(state.chapterIndex));
-  els.menuBtn.addEventListener('click',()=>els.sidebar.classList.toggle('open'));
-  document.addEventListener('click',e=>{ if(innerWidth<=900 && els.sidebar.classList.contains('open') && !els.sidebar.contains(e.target) && e.target!==els.menuBtn) els.sidebar.classList.remove('open'); });
-  els.voiceEn.addEventListener('change',()=>{storage.set('lq_voice_en',els.voiceEn.value);toast('Đã đổi giọng tiếng Anh');});
-  els.voiceZh.addEventListener('change',()=>{storage.set('lq_voice_zh',els.voiceZh.value);toast('Đã đổi giọng tiếng Trung');});
-  speechSynthesis.onvoiceschanged=loadVoices;
-  setTimeout(loadVoices,100);
-  setTimeout(loadVoices,900);
-
-  renderChapters(); renderScene(); updateStats();
-})();
-</script>
-</body>
+<script src="src/app.js" type="module"></script></body>
 </html>

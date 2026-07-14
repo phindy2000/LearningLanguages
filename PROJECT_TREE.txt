@@ -1,0 +1,38 @@
+Lingua Quest Modular
+│
+├─ index.html
+├─ server.mjs
+├─ start.bat
+├─ package.json
+├─ README.md
+├─ PROJECT_TREE.txt
+│
+├─ assets/css
+│  ├─ tokens.css
+│  ├─ layout.css
+│  ├─ components.css
+│  └─ responsive.css
+│
+├─ src
+│  ├─ app.js
+│  ├─ config/app-config.js
+│  ├─ core/dom.js
+│  ├─ core/storage.js
+│  ├─ core/utils.js
+│  ├─ data/phrases.js
+│  ├─ data/vocabulary.js
+│  ├─ data/chapters.js
+│  ├─ services/inventory-service.js
+│  ├─ services/progress-service.js
+│  ├─ services/speech-service.js
+│  ├─ services/translation-service.js
+│  ├─ controllers/story-controller.js
+│  ├─ controllers/lookup-controller.js
+│  ├─ controllers/translation-controller.js
+│  └─ controllers/inventory-controller.js
+│
+├─ scripts/check-project.mjs
+│
+└─ docs
+   ├─ ARCHITECTURE.md
+   └─ DATA-SCHEMA.md
