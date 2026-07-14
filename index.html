@@ -61,14 +61,14 @@
 </section>
 <section class="view" id="translateView">
 <div class="page-shell panel">
-<div class="panel-head"><div><h3>Dịch Anh–Trung</h3><p>Dịch chính xác trong kho tích hợp; câu ngoài kho sẽ được đánh dấu rõ ràng.</p></div></div>
+<div class="panel-head"><div><h3>Dịch Anh–Trung</h3><p>Ưu tiên kho học cục bộ, sau đó dùng dịch vụ trực tuyến cho từ và câu ngoài kho.</p></div></div>
 <div class="panel-body">
 <div class="translator-grid">
 <div class="translate-side"><label>Văn bản nguồn</label><div class="translate-controls"><select class="select" id="sourceLang"><option value="auto">Tự nhận diện</option><option value="en">English</option><option value="zh">中文</option></select><button class="icon-btn" id="speakSourceBtn" title="Nghe văn bản nguồn">🔊</button></div><textarea class="textarea" id="translateInput" placeholder="Nhập câu tiếng Anh hoặc tiếng Trung..."></textarea></div>
 <div class="swap-wrap"><button class="swap-btn" id="swapLangBtn" title="Đổi chiều dịch">⇄</button></div>
 <div class="translate-side"><label id="targetLangLabel">Bản dịch</label><div class="translation-meta"><span class="quality-tag quality-none" id="translationQuality">Chưa dịch</span><a class="fallback-link" href="#" id="googleTranslateLink" rel="noopener" style="display:none" target="_blank">Mở Google Dịch ↗</a></div><div class="translation-output" id="translationOutput">Bản dịch sẽ xuất hiện tại đây.</div><div class="translation-pinyin" id="translationPinyin"></div><div class="translate-controls"><button class="primary" id="translateBtn">Dịch</button><button class="secondary" id="speakTranslationBtn">🔊 Nghe bản dịch</button><button class="secondary" id="addTranslationBtn">＋ Inventory</button></div></div>
 </div>
-<div class="translator-note"><b>Phạm vi:</b> WebApp không gọi AI hoặc API dịch trả phí. Hệ thống ưu tiên khớp chính xác với kho câu/từ tích hợp, sau đó thử ghép nghĩa từng từ. Nội dung ghép gần đúng luôn được gắn nhãn để tránh hiểu nhầm là bản dịch chuẩn.</div>
+<div class="translator-note"><b>Cơ chế:</b> Bản khớp trong kho học được trả ngay. Nội dung ngoài kho sẽ gọi backend dịch thuật; mặc định dùng MyMemory, hoặc Google Cloud Translation khi server có API key. Nếu mất mạng, hệ thống mới hiển thị bản ghép từ cục bộ và gắn nhãn rõ ràng. Văn bản gửi dịch trực tuyến sẽ được chuyển tới nhà cung cấp đã cấu hình.</div>
 </div>
 </div>
 </section>

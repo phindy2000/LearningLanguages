@@ -3,9 +3,14 @@ Lingua Quest Modular
 ├─ index.html
 ├─ server.mjs
 ├─ start.bat
+├─ start-google-cloud.bat
+├─ start-local-only.bat
 ├─ package.json
 ├─ README.md
 ├─ PROJECT_TREE.txt
+│
+├─ server
+│  └─ translation-provider.mjs
 │
 ├─ assets/css
 │  ├─ tokens.css
@@ -25,6 +30,8 @@ Lingua Quest Modular
 │  ├─ services/inventory-service.js
 │  ├─ services/progress-service.js
 │  ├─ services/speech-service.js
+│  ├─ services/local-translation-service.js
+│  ├─ services/translation-api-service.js
 │  ├─ services/translation-service.js
 │  ├─ controllers/story-controller.js
 │  ├─ controllers/lookup-controller.js
@@ -35,4 +42,5 @@ Lingua Quest Modular
 │
 └─ docs
    ├─ ARCHITECTURE.md
-   └─ DATA-SCHEMA.md
+   ├─ DATA-SCHEMA.md
+   └─ TRANSLATION.md

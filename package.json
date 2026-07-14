@@ -1,9 +1,9 @@
 {
   "name": "lingua-quest-modular",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
-  "description": "Modular English-Chinese story learning web app.",
+  "description": "Modular English-Chinese story learning app with local-first and server-side translation.",
   "scripts": {
     "start": "node server.mjs",
     "check": "node scripts/check-project.mjs"

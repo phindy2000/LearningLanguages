@@ -6,6 +6,7 @@ export class TranslationController {
     this.inventory = inventory;
     this.notify = notify;
     this.current = null;
+    this.isTranslating = false;
   }
 
   initialize() {
@@ -22,67 +23,110 @@ export class TranslationController {
       this.speech.speak(text, language);
     });
     this.elements.speakTranslationButton.addEventListener('click', () => {
-      if (this.current) this.speech.speak(this.current.text, this.current.target);
+      if (this.current?.text) this.speech.speak(this.current.text, this.current.target);
     });
     this.elements.swapButton.addEventListener('click', () => this.swap());
     this.elements.addButton.addEventListener('click', () => this.addCurrentToInventory());
   }
 
-  translate() {
+  async translate() {
     const text = this.elements.input.value.trim();
     if (!text) {
       this.notify('Hãy nhập nội dung cần dịch');
       return;
     }
-    this.current = this.translator.translate(text, this.elements.sourceLanguage.value);
-    this.elements.targetLabel.textContent = this.current.target === 'zh'
-      ? 'Bản dịch tiếng Trung'
-      : 'English translation';
-    this.elements.output.textContent = this.current.text || 'Không tìm thấy bản dịch.';
-    this.elements.pinyin.textContent = this.current.target === 'zh' ? this.current.pinyin || '' : '';
-    this.renderQuality(this.current.quality);
-    this.elements.googleLink.href = this.translator.buildGoogleTranslateUrl(
-      text,
-      this.current.source,
-      this.current.target,
-    );
-    this.elements.googleLink.style.display = this.current.quality === 'exact' ? 'none' : 'inline';
+    if (this.isTranslating) return;
+
+    this.setLoading(true);
+    try {
+      this.current = await this.translator.translate(
+        text,
+        this.elements.sourceLanguage.value,
+      );
+
+      this.elements.targetLabel.textContent = this.current.target === 'zh'
+        ? 'Bản dịch tiếng Trung'
+        : 'English translation';
+      this.elements.output.textContent = this.current.text || 'Không tìm thấy bản dịch.';
+      this.elements.pinyin.textContent = this.current.target === 'zh'
+        ? this.current.pinyin || ''
+        : '';
+      this.renderQuality(this.current);
+      this.elements.googleLink.href = this.translator.buildGoogleTranslateUrl(
+        text,
+        this.current.source,
+        this.current.target,
+      );
+      this.elements.googleLink.style.display = this.current.quality === 'none'
+        ? 'inline'
+        : 'none';
+
+      if (this.current.remoteError && this.current.quality !== 'exact') {
+        this.notify(`Không gọi được dịch trực tuyến: ${this.current.remoteError}`);
+      }
+    } finally {
+      this.setLoading(false);
+    }
   }
 
-  renderQuality(quality) {
-    const meta = quality === 'exact'
-      ? ['Khớp chính xác', 'quality-exact']
-      : quality === 'partial'
-        ? ['Ghép gần đúng', 'quality-partial']
-        : ['Ngoài kho', 'quality-none'];
+  setLoading(isLoading) {
+    this.isTranslating = isLoading;
+    this.elements.translateButton.disabled = isLoading;
+    this.elements.translateButton.textContent = isLoading ? 'Đang dịch…' : 'Dịch';
+    if (isLoading) {
+      this.elements.output.textContent = 'Đang kết nối dịch vụ dịch thuật…';
+      this.elements.pinyin.textContent = '';
+      this.elements.quality.textContent = 'Đang xử lý';
+      this.elements.quality.className = 'quality-tag quality-loading';
+    }
+  }
+
+  renderQuality(result) {
+    let meta;
+    switch (result.quality) {
+      case 'exact':
+        meta = ['Khớp kho học', 'quality-exact'];
+        break;
+      case 'remote':
+        meta = [result.provider === 'google-cloud' ? 'Google Cloud' : 'Dịch trực tuyến', 'quality-remote'];
+        break;
+      case 'partial':
+        meta = ['Ghép từ cục bộ', 'quality-partial'];
+        break;
+      default:
+        meta = ['Không dịch được', 'quality-none'];
+        break;
+    }
     this.elements.quality.textContent = meta[0];
     this.elements.quality.className = `quality-tag ${meta[1]}`;
   }
 
-  swap() {
+  async swap() {
     const text = this.elements.input.value.trim();
     const currentLanguage = this.elements.sourceLanguage.value === 'auto'
       ? this.translator.detectLanguage(text)
       : this.elements.sourceLanguage.value;
+
     this.elements.sourceLanguage.value = currentLanguage === 'en' ? 'zh' : 'en';
-    if (this.current) this.elements.input.value = this.current.text;
-    this.translate();
+    if (this.current?.text) this.elements.input.value = this.current.text;
+    if (this.elements.input.value.trim()) await this.translate();
   }
 
   addCurrentToInventory() {
-    if (!this.current) {
+    if (!this.current?.text) {
       this.notify('Chưa có bản dịch để thêm');
       return;
     }
-    if (this.current.quality !== 'exact') {
-      this.notify('Chỉ bản dịch khớp chính xác mới được thêm tự động');
+    if (!['exact', 'remote'].includes(this.current.quality)) {
+      this.notify('Bản ghép từ hoặc bản lỗi không được thêm tự động');
       return;
     }
+
     const result = this.inventory.add({
-      en: this.current.target === 'en' ? this.current.text : this.current.input,
-      zh: this.current.target === 'zh' ? this.current.text : this.current.input,
+      en: this.current.en,
+      zh: this.current.zh,
       pinyin: this.current.pinyin || '',
-      cat: 'Dịch cá nhân',
+      cat: this.current.quality === 'exact' ? 'Kho học tích hợp' : 'Dịch cá nhân',
     }, 'phrase');
     this.notify(result.message);
   }

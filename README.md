@@ -1,106 +1,108 @@
 # Lingua Quest — English × 中文
 
-WebApp học song ngữ Anh–Trung theo mini game story. Bản này đã được tách thành dự án nhiều file, không còn nhúng toàn bộ CSS, dữ liệu và JavaScript trong một HTML.
+WebApp học song ngữ Anh–Trung theo mini game story. Dự án được tách thành frontend modules, dữ liệu, services, controllers và Node backend.
 
 ## Chạy ứng dụng
 
-### Cách 1 — Windows
+### Windows
 
 1. Cài Node.js 18 trở lên.
-2. Mở thư mục dự án.
-3. Chạy `start.bat`.
-4. Mở `http://127.0.0.1:8080`.
+2. Chạy `start.bat`.
+3. Mở `http://127.0.0.1:8080`.
 
-### Cách 2 — Terminal
+### Terminal
 
 ```bash
 npm start
 ```
 
-Không nên mở trực tiếp `index.html` bằng `file://`, vì trình duyệt có thể chặn ES Module. Dự án không cần cài package ngoài và không cần chạy `npm install`.
+Không cần `npm install` và không nên mở trực tiếp `index.html` bằng `file://`.
 
-## Kiểm tra cấu trúc và dữ liệu
+## Dịch thuật đã sửa
+
+Bản cũ chỉ tra kho dữ liệu nên từ như `Dog` bị hiển thị `[Dog]`. Bản hiện tại dùng luồng:
+
+1. Khớp từ/câu trong kho cục bộ.
+2. Nếu ngoài kho, gọi backend `/api/translate`.
+3. Backend mặc định dùng MyMemory.
+4. Khi có `GOOGLE_TRANSLATE_API_KEY`, chế độ `auto` ưu tiên Google Cloud Translation.
+5. Nếu mất mạng, chỉ hiển thị fallback cục bộ và gắn nhãn rõ ràng.
+
+`dog → 狗 (gǒu)` đã có sẵn trong kho cục bộ nên vẫn dùng được khi offline.
+
+Xem cấu hình chi tiết tại `docs/TRANSLATION.md`.
+
+## Chọn nhà cung cấp
+
+### Mặc định — không cần API key
+
+```bash
+npm start
+```
+
+Server dùng MyMemory cho nội dung ngoài kho.
+
+### Google Cloud Translation
+
+Windows có thể chạy:
+
+```text
+start-google-cloud.bat
+```
+
+Hoặc thiết lập biến môi trường:
+
+```bat
+set TRANSLATION_PROVIDER=google-cloud
+set GOOGLE_TRANSLATE_API_KEY=YOUR_API_KEY
+node server.mjs
+```
+
+API key nằm ở server, không được gửi xuống trình duyệt.
+
+### Chỉ dùng offline
+
+```text
+start-local-only.bat
+```
+
+## Kiểm tra
 
 ```bash
 npm run check
 ```
 
-Lệnh kiểm tra:
-
-- Các file bắt buộc.
-- Bốn màn hình chính.
-- ID câu được tham chiếu trong Story.
-- Các lựa chọn đáp án có tồn tại trong kho câu.
+Lệnh này kiểm tra cấu trúc, dữ liệu Story, từ `dog`, dịch local và mô phỏng dịch API.
 
 ## Cấu trúc chính
 
 ```text
 lingua-quest-modular/
-├── index.html                     # Khung giao diện và các vùng hiển thị
-├── server.mjs                     # Web server cục bộ, không cần thư viện ngoài
-├── start.bat                      # Chạy nhanh trên Windows
-├── package.json
-├── assets/
-│   └── css/
-│       ├── tokens.css             # Biến màu, font và baseline
-│       ├── layout.css             # App shell, sidebar, topbar
-│       ├── components.css         # Thành phần Story, dịch, tra cứu, inventory
-│       └── responsive.css         # Mobile và tablet
+├── index.html
+├── server.mjs
+├── server/translation-provider.mjs
+├── assets/css/
 ├── src/
-│   ├── app.js                     # Điểm khởi động và điều phối hệ thống
+│   ├── app.js
 │   ├── config/
-│   │   └── app-config.js          # Nhãn, storage key, rank, mode
 │   ├── core/
-│   │   ├── dom.js                 # Truy vấn DOM
-│   │   ├── storage.js             # LocalStorage an toàn
-│   │   └── utils.js               # Chuẩn hóa, escape, shuffle, tạo ID
 │   ├── data/
-│   │   ├── phrases.js             # Kho câu Anh–Trung
-│   │   ├── vocabulary.js          # Kho từ vựng
-│   │   └── chapters.js            # Chương và scene của game
 │   ├── services/
-│   │   ├── inventory-service.js   # Thêm, xóa, lọc, cập nhật trạng thái
-│   │   ├── progress-service.js    # XP, tiến độ chương, rank
-│   │   ├── speech-service.js      # Google/System SpeechSynthesis voices
-│   │   └── translation-service.js # Dịch dựa trên kho nội dung tích hợp
 │   └── controllers/
-│       ├── story-controller.js
-│       ├── lookup-controller.js
-│       ├── translation-controller.js
-│       └── inventory-controller.js
 ├── scripts/
-│   └── check-project.mjs
 └── docs/
-    ├── ARCHITECTURE.md
-    └── DATA-SCHEMA.md
 ```
 
 ## Nơi chỉnh nội dung
 
-- Thêm câu mới: `src/data/phrases.js`.
-- Thêm từ mới: `src/data/vocabulary.js`.
-- Tạo chương hoặc scene mới: `src/data/chapters.js`.
-- Sửa cấp rank: `src/config/app-config.js`.
-- Sửa giao diện: các file trong `assets/css`.
-- Sửa logic từng chức năng: controller tương ứng.
+- Câu mới: `src/data/phrases.js`
+- Từ mới: `src/data/vocabulary.js`
+- Story: `src/data/chapters.js`
+- Rank: `src/config/app-config.js`
+- Giao diện: `assets/css/`
+- Dịch phía trình duyệt: `src/services/*translation*`
+- Provider dịch phía server: `server/translation-provider.mjs`
 
 ## Lưu trữ
 
-Ứng dụng hiện lưu dữ liệu trên trình duyệt bằng LocalStorage:
-
-- `lqx2_inventory`
-- `lqx2_progress`
-- `lqx2_xp`
-- `lqx2_voice_en`
-- `lqx2_voice_zh`
-
-Khi chuyển sang hệ thống nhiều người dùng, chỉ cần thay `StorageService` và `InventoryService` bằng API/backend; controller và giao diện không cần viết lại toàn bộ.
-
-## Giới hạn dịch thuật
-
-Chức năng dịch không sử dụng AI và không gọi API trả phí. Hệ thống:
-
-1. Tìm bản khớp chính xác trong kho câu/từ.
-2. Thử ghép từ khi không có bản khớp.
-3. Gắn nhãn rõ mức độ tin cậy.
-4. Cho phép mở Google Dịch khi nội dung nằm ngoài kho.
+Inventory, tiến độ, XP và voice vẫn được lưu bằng LocalStorage. Dịch trực tuyến cần Internet và văn bản sẽ được gửi tới provider đang hoạt động.
