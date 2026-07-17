@@ -1,90 +1,16 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="#0f766e" name="theme-color"/>
-<title>Lingua Quest — English × 中文</title>
-
-<link href="assets/css/tokens.css" rel="stylesheet"/><link href="assets/css/layout.css" rel="stylesheet"/><link href="assets/css/components.css" rel="stylesheet"/><link href="assets/css/responsive.css" rel="stylesheet"/><meta content="Lingua Quest modular English-Chinese learning web app." name="description"/></head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#126c55" />
+  <meta name="description" content="Webgame cốt truyện học giao tiếp tiếng Trung tại Thành Đô." />
+  <meta http-equiv="refresh" content="0; url=./chengdu-story-ui-starter/" />
+  <link rel="canonical" href="./chengdu-story-ui-starter/" />
+  <title>今天也有新消息</title>
+</head>
 <body>
-<div class="app">
-<aside class="sidebar" id="sidebar">
-<div class="brand"><div class="brand-mark">LQ</div><div><h1>Lingua Quest</h1><small>English × 中文</small></div></div>
-<div>
-<div class="nav-title">Chức năng</div>
-<nav class="app-nav">
-<button class="nav-btn active" data-view="story"><span class="ico">🎮</span>Game Story</button>
-<button class="nav-btn" data-view="lookup"><span class="ico">🔎</span>Tra cứu</button>
-<button class="nav-btn" data-view="translate"><span class="ico">⇄</span>Dịch Anh–Trung</button>
-<button class="nav-btn" data-view="inventory"><span class="ico">🎒</span>Inventory <span class="count" id="inventoryNavCount">0</span></button>
-</nav>
-</div>
-<div id="chapterNavWrap">
-<div class="nav-title">Chương Story</div>
-<div class="chapter-list" id="chapterList"></div>
-</div>
-<div class="sidebar-rank">
-<div class="rank-label">Learner rank</div><div class="rank-name" id="rankName">Starter</div>
-<div class="rank-track"><div class="rank-fill" id="rankFill"></div></div><div class="rank-next" id="rankNext">0 / 150 XP</div>
-</div>
-<div class="sidebar-foot">Dữ liệu tiến độ và Inventory được lưu trong trình duyệt hiện tại. Giọng đọc ưu tiên voice có tên Google, sau đó dùng voice hệ thống.</div>
-</aside>
-<main class="main">
-<header class="topbar">
-<button aria-label="Mở menu" class="mobile-menu" id="menuBtn">☰</button>
-<div class="view-title"><h2 id="viewHeading">Game Story</h2><p id="viewSubheading">Học câu giao tiếp theo tình huống nối tiếp</p></div>
-<div class="voice-panel"><span>EN</span><select aria-label="Giọng tiếng Anh" id="voiceEn"></select></div>
-<div class="voice-panel"><span>中文</span><select aria-label="Giọng tiếng Trung" id="voiceZh"></select></div>
-<div class="stats"><div class="stat">🔥 <span id="streak">0</span><small>chuỗi</small></div><div class="stat">⭐ <span id="xp">0</span><small>XP</small></div><div class="stat">❤️ <span id="hearts">3</span></div></div>
-</header>
-<section class="view active" id="storyView">
-<div class="page-shell">
-<div class="progress-row"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="scene-count" id="sceneCount">1 / 1</div></div>
-<article class="story-card" id="storyCard">
-<header class="scene-head"><div class="scene-visual" id="sceneVisual">☕</div><div><h2 id="sceneTitle"></h2><p id="sceneContext"></p></div><div class="mode-tag" id="modeTag"></div></header>
-<div class="game-body" id="gameBody"></div>
-<footer class="game-footer" id="gameFooter"><button class="secondary" id="replayBtn">🔊 Nghe lại</button><span class="mini-note" id="voiceStatus">Đang tìm voice…</span><button class="primary" disabled="" id="nextBtn">Kiểm tra</button></footer>
-<div class="complete" id="completeView"><div class="complete-icon">🏆</div><h2>Hoàn thành chương</h2><p id="completeText"></p><div class="result-grid"><div class="result-item"><b id="resultCorrect">0</b><span>Câu đúng</span></div><div class="result-item"><b id="resultXp">0</b><span>XP nhận được</span></div><div class="result-item"><b id="resultAccuracy">0%</b><span>Độ chính xác</span></div></div><button class="primary" id="restartBtn">Học lại chương</button></div>
-</article>
-</div>
-</section>
-<section class="view" id="lookupView">
-<div class="page-shell panel">
-<div class="panel-head"><div><h3>Tra cứu câu và từ vựng</h3><p>Tìm theo tiếng Anh, tiếng Trung hoặc Pinyin; nghe phát âm và thêm thẳng vào Inventory.</p></div></div>
-<div class="panel-body">
-<div class="search-row"><input class="input" id="lookupInput" placeholder="Ví dụ: report, 酒店, kāfēi..."/><select class="select" id="lookupCategory"><option value="all">Tất cả chủ đề</option></select><button class="primary" id="lookupBtn">Tra cứu</button></div>
-<div class="result-summary" id="lookupSummary"></div><div class="lookup-grid" id="lookupResults"></div>
-</div>
-</div>
-</section>
-<section class="view" id="translateView">
-<div class="page-shell panel">
-<div class="panel-head"><div><h3>Dịch Anh–Trung</h3><p>Ưu tiên kho học cục bộ, sau đó dùng dịch vụ trực tuyến cho từ và câu ngoài kho.</p></div></div>
-<div class="panel-body">
-<div class="translator-grid">
-<div class="translate-side"><label>Văn bản nguồn</label><div class="translate-controls"><select class="select" id="sourceLang"><option value="auto">Tự nhận diện</option><option value="en">English</option><option value="zh">中文</option></select><button class="icon-btn" id="speakSourceBtn" title="Nghe văn bản nguồn">🔊</button></div><textarea class="textarea" id="translateInput" placeholder="Nhập câu tiếng Anh hoặc tiếng Trung..."></textarea></div>
-<div class="swap-wrap"><button class="swap-btn" id="swapLangBtn" title="Đổi chiều dịch">⇄</button></div>
-<div class="translate-side"><label id="targetLangLabel">Bản dịch</label><div class="translation-meta"><span class="quality-tag quality-none" id="translationQuality">Chưa dịch</span><a class="fallback-link" href="#" id="googleTranslateLink" rel="noopener" style="display:none" target="_blank">Mở Google Dịch ↗</a></div><div class="translation-output" id="translationOutput">Bản dịch sẽ xuất hiện tại đây.</div><div class="translation-pinyin" id="translationPinyin"></div><div class="translate-controls"><button class="primary" id="translateBtn">Dịch</button><button class="secondary" id="speakTranslationBtn">🔊 Nghe bản dịch</button><button class="secondary" id="addTranslationBtn">＋ Inventory</button></div></div>
-</div>
-<div class="translator-note"><b>Cơ chế:</b> Bản khớp trong kho học được trả ngay. Nội dung ngoài kho sẽ gọi backend dịch thuật; mặc định dùng MyMemory, hoặc Google Cloud Translation khi server có API key. Nếu mất mạng, hệ thống mới hiển thị bản ghép từ cục bộ và gắn nhãn rõ ràng. Văn bản gửi dịch trực tuyến sẽ được chuyển tới nhà cung cấp đã cấu hình.</div>
-</div>
-</div>
-</section>
-<section class="view" id="inventoryView">
-<div class="page-shell">
-<div class="inventory-summary"><div class="summary-card"><b id="countNew">0</b><span>Mới thêm</span></div><div class="summary-card"><b id="countUnlearned">0</b><span>Chưa thuộc</span></div><div class="summary-card"><b id="countReview">0</b><span>Ôn tập</span></div><div class="summary-card"><b id="countMastered">0</b><span>Đã thuộc</span></div></div>
-<div class="inventory-layout">
-<section class="panel add-panel"><div class="panel-head"><div><h3>Thêm từ/câu mới</h3><p>Mục mới được xếp vào trạng thái “Mới thêm”.</p></div></div><div class="panel-body"><form class="add-form" id="inventoryForm"><input class="input" id="invEn" placeholder="English" required=""/><input class="input" id="invZh" placeholder="中文" required=""/><input class="input" id="invPinyin" placeholder="Pinyin"/><div class="form-row"><input class="input" id="invCategory" placeholder="Chủ đề" value="Tự thêm"/><select class="select" id="invType"><option value="word">Từ vựng</option><option value="phrase">Câu giao tiếp</option></select></div><button class="primary" type="submit">Thêm vào Inventory</button></form></div></section>
-<section class="panel"><div class="panel-head"><div><h3>Kho học cá nhân</h3><p>Đổi trạng thái trực tiếp hoặc mở chế độ ôn nhanh.</p></div></div><div class="panel-body"><div class="inventory-toolbar"><input class="input" id="inventorySearch" placeholder="Tìm trong Inventory..."/><select class="select" id="inventoryStatusFilter"><option value="all">Tất cả trạng thái</option><option value="new">Mới thêm</option><option value="unlearned">Chưa thuộc</option><option value="review">Ôn tập</option><option value="mastered">Đã thuộc</option></select><button class="primary" id="reviewBtn">Ôn nhanh</button></div><div class="inventory-list" id="inventoryList"></div></div></section>
-</div>
-</div>
-</section>
-</main>
-</div>
-<div class="modal-backdrop" id="reviewBackdrop"><div class="review-modal"><div class="review-head"><h3>Ôn nhanh Inventory</h3><span class="mini-note" id="reviewProgress"></span><button class="close-btn" id="closeReviewBtn">✕</button></div><div class="review-card"><div><div class="review-en" id="reviewEn"></div><div class="review-hidden" id="reviewAnswer"><div class="review-zh" id="reviewZh"></div><div class="review-pinyin" id="reviewPinyin"></div></div></div></div><div class="review-controls" id="reviewControls"><button class="review-reveal" id="revealReviewBtn">Hiện đáp án</button></div></div></div>
-<div class="toast" id="toast"></div>
-
-<script src="src/app.js" type="module"></script></body>
+  <p>Đang mở <a href="./chengdu-story-ui-starter/">Chương 1 — Những ngày ở nhờ</a>…</p>
+  <script>location.replace("./chengdu-story-ui-starter/");</script>
+</body>
 </html>

@@ -1,0 +1,16 @@
+{
+  "name": "今天也有新消息",
+  "short_name": "Chengdu Story",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f1",
+  "theme_color": "#126c55",
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
