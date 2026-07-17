@@ -278,7 +278,7 @@
             <button class="text-button" data-action="open-settings">⚙ Cài đặt</button>
           </div>
         </header>
-        <section class="story-stage">
+        <section class="story-stage ${scene.choice ? "has-choice" : ""}">
           <div class="stage-overlay">
             <div class="scene-label">${escapeHtml(scene.titleZh)}${state.pinyinVisible ? ` · ${escapeHtml(scene.titlePinyin)}` : ""}</div>
             <div class="chat-feed">${messages}</div>
