@@ -1,10 +1,10 @@
-const CACHE_NAME = "chengdu-story-ui-v20";
+const CACHE_NAME = "chengdu-story-ui-v21";
 const FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=20",
-  "./data.js?v=20",
-  "./app.js?v=20",
+  "./styles.css?v=21",
+  "./data.js?v=21",
+  "./app.js?v=21",
   "./manifest.webmanifest",
   "./assets/app-icon.svg"
 ];
