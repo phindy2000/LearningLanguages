@@ -8,12 +8,12 @@
   const SESSION_KEY = "chengduStory.sessionPlayer.v1";
   const LOG_PREFIX = "chengduStory.log.";
   const LOG_SUFFIX = ".v1";
-  const ASSET_CACHE = "chengdu-story-assets-v24";
+  const ASSET_CACHE = "chengdu-story-assets-v26";
   const ASSETS = [
-    "./styles.css?v=24",
-    "./account.js?v=24",
-    "./data.js?v=24",
-    "./app.js?v=24",
+    "./styles.css?v=26",
+    "./account.js?v=26",
+    "./data.js?v=26",
+    "./app.js?v=26",
     "./manifest.webmanifest",
     "./assets/app-icon.svg"
   ];
