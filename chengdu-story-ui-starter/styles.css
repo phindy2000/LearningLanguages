@@ -72,9 +72,18 @@ button:focus-visible, input:focus-visible {
 .loading-symbol { margin: 0 auto 24px; }
 .loading-title { font-size: 25px; font-weight: 850; }
 .loading-status { min-height: 22px; margin-top: 8px; color: var(--muted); font-size: 14px; }
+.loading-steps { display: grid; gap: 9px; margin-top: 25px; text-align: left; }
+.loading-step { display: grid; grid-template-columns: 28px 1fr; align-items: center; gap: 10px; color: #8a9590; font-size: 13px; }
+.loading-step span { width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid #ced9d3; border-radius: 50%; background: #f7faf8; font-size: 11px; font-weight: 850; }
+.loading-step.active { color: var(--accent-strong); }
+.loading-step.active span { border-color: #84c5ae; background: var(--accent-soft); }
+.loading-step.done { color: #354740; }
+.loading-step.done span { border-color: var(--accent); color: #fff; background: var(--accent); }
 .loading-track { height: 7px; margin-top: 24px; overflow: hidden; border-radius: 99px; background: #dce6e0; }
 .loading-value { height: 100%; border-radius: inherit; background: linear-gradient(90deg,#2fa57e,#126c55); transition: width .2s ease; }
 .loading-percent { margin-top: 9px; color: var(--accent-strong); font-size: 12px; font-weight: 800; }
+.loading-action { width: 100%; min-height: 48px; margin-top: 18px; font-weight: 800; }
+.loading-action:disabled { cursor: wait; opacity: .72; }
 .account-summary { display: grid; gap: 3px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-soft); }
 .account-summary span,.account-summary small { color: var(--muted); font-size: 12px; }
 .account-summary strong { font-size: 15px; }

@@ -22,6 +22,7 @@
   let sessionAccount = null;
   let activeDrawer = null;
   let toastTimer = null;
+  const translationRuntime = { translators: new Map(), supportedPairs: new Set(), ready: false, supported: false };
 
   function getChapterProgress() {
     const totalChoices = content.chapter.scenes.filter(scene => scene.choice).length;
@@ -143,25 +144,111 @@
     }
   }
 
-  function renderLoading(progress, status) {
+  function renderLoading(progress, status, actionLabel = "") {
+    const assetState = progress >= 55 ? "done" : progress >= 10 ? "active" : "";
+    const translatorState = progress >= 96 ? "done" : progress >= 55 ? "active" : "";
     document.getElementById("app").innerHTML = `
       <main class="loading-screen" aria-live="polite"><div class="loading-card">
         <div class="loading-symbol">今</div><div class="loading-title">Đang chuẩn bị Thành Đô</div>
         <div class="loading-status">${escapeHtml(status)}</div>
+        <div class="loading-steps">
+          <div class="loading-step done"><span>✓</span><strong>Tiến trình người chơi</strong></div>
+          <div class="loading-step ${assetState}"><span>${progress >= 55 ? "✓" : "2"}</span><strong>Thư viện trò chơi</strong></div>
+          <div class="loading-step ${translatorState}"><span>${progress >= 96 ? "✓" : "3"}</span><strong>Bộ dịch Trung ↔ Việt</strong></div>
+        </div>
         <div class="loading-track"><div class="loading-value" style="width:${progress}%"></div></div>
         <div class="loading-percent">${progress}%</div>
+        ${actionLabel ? `<button class="primary-button loading-action" id="loading-action" type="button">${escapeHtml(actionLabel)}</button>` : ""}
       </div></main>`;
   }
 
+  function translatorKey(sourceLanguage, targetLanguage) {
+    return `${sourceLanguage}-${targetLanguage}`;
+  }
+
+  function createTranslatorDirect(sourceLanguage, targetLanguage, onProgress) {
+    const key = translatorKey(sourceLanguage, targetLanguage);
+    if (translationRuntime.translators.has(key)) return Promise.resolve(translationRuntime.translators.get(key));
+    try {
+      const creation = self.Translator.create({
+        sourceLanguage,
+        targetLanguage,
+        monitor(monitor) {
+          monitor.addEventListener("downloadprogress", event => onProgress?.(Math.round(event.loaded * 100)));
+        }
+      });
+      return creation.then(translator => {
+        translationRuntime.translators.set(key, translator);
+        translationRuntime.supportedPairs.add(key);
+        return translator;
+      });
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  async function createTranslator(sourceLanguage, targetLanguage, onProgress) {
+    const key = translatorKey(sourceLanguage, targetLanguage);
+    if (translationRuntime.translators.has(key)) return translationRuntime.translators.get(key);
+    if (!("Translator" in self)) throw new Error("translator-unavailable");
+    const availability = await self.Translator.availability({ sourceLanguage, targetLanguage });
+    if (availability === "unavailable") throw new Error("language-pair-unavailable");
+    return createTranslatorDirect(sourceLanguage, targetLanguage, onProgress);
+  }
+
+  function downloadTranslationPairs(pairs, onProgress) {
+    const jobs = pairs.map(([sourceLanguage, targetLanguage], index) => createTranslatorDirect(sourceLanguage, targetLanguage, pairProgress => {
+      onProgress?.(Math.round(((index + pairProgress / 100) / pairs.length) * 100), "Đang tải bộ dịch Trung ↔ Việt");
+    }));
+    return Promise.allSettled(jobs);
+  }
+
+  function requestTranslationDownload(pairs, onProgress) {
+    return new Promise(resolve => {
+      renderLoading(60, "Chrome cần xác nhận tải bộ dịch một lần", "Tải bộ dịch và tiếp tục");
+      const button = document.getElementById("loading-action");
+      button.addEventListener("click", async () => {
+        button.disabled = true;
+        button.textContent = "Đang tải bộ dịch…";
+        const results = await downloadTranslationPairs(pairs, onProgress);
+        results.forEach((result, index) => {
+          if (result.status === "rejected") console.info(`Chiều dịch ${pairs[index].join(" → ")} chưa sẵn sàng:`, result.reason?.message);
+        });
+        resolve();
+      }, { once: true });
+    });
+  }
+
+  async function prepareTranslationLibrary(onProgress) {
+    if (!("Translator" in self)) {
+      translationRuntime.ready = true;
+      onProgress?.(100, "Đã chuẩn bị từ điển cục bộ");
+      return;
+    }
+    const candidates = [["zh", "vi"], ["vi", "zh"]];
+    const checks = await Promise.all(candidates.map(async pair => ({ pair, availability: await self.Translator.availability({ sourceLanguage: pair[0], targetLanguage: pair[1] }) })));
+    const supportedPairs = checks.filter(item => item.availability !== "unavailable").map(item => item.pair);
+    const needsDownload = checks.some(item => item.availability === "downloadable" || item.availability === "downloading");
+    if (needsDownload && supportedPairs.length) await requestTranslationDownload(supportedPairs, onProgress);
+    else if (supportedPairs.length) await downloadTranslationPairs(supportedPairs, onProgress);
+    translationRuntime.ready = true;
+    translationRuntime.supported = translationRuntime.supportedPairs.size > 0;
+    onProgress?.(100, translationRuntime.supported ? "Bộ dịch đã sẵn sàng" : "Đã chuẩn bị từ điển cục bộ");
+  }
+
   async function prepareAndEnterGame() {
-    renderLoading(8, "Đang đọc tiến trình người chơi");
+    const loadingStartedAt = Date.now();
+    renderLoading(6, "Đang đọc tiến trình người chơi");
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
       await navigator.serviceWorker.register("./sw.js").catch(error => console.info("Service Worker chưa hoạt động:", error));
     }
-    await playerDataStore.prepareGameAssets((progress, status) => renderLoading(Math.max(12, progress), status));
+    await playerDataStore.prepareGameAssets((progress, status) => renderLoading(10 + Math.round(progress * .45), status));
+    renderLoading(56, "Đang kiểm tra bộ dịch Trung ↔ Việt");
+    await prepareTranslationLibrary((progress, status) => renderLoading(56 + Math.round(progress * .4), status));
     state = loadState(sessionAccount);
     renderLoading(100, "Sẵn sàng vào chương 1");
-    await new Promise(resolve => setTimeout(resolve, 260));
+    const remaining = Math.max(0, 1100 - (Date.now() - loadingStartedAt));
+    if (remaining) await new Promise(resolve => setTimeout(resolve, remaining));
     renderApp();
   }
 
@@ -651,7 +738,7 @@
           </div>
         </form>
         <section id="translator-result" class="translator-result hidden" aria-live="polite"></section>
-        <div id="translator-status" class="translator-status">Chrome desktop có thể dịch ngay trên thiết bị.</div>
+        <div id="translator-status" class="translator-status">${translationRuntime.supported ? "Bộ dịch đã sẵn sàng trên thiết bị." : "Đang dùng từ điển cục bộ."}</div>
         <button class="dictionary-saved-shortcut" id="open-saved-words">★ Ôn từ đã lưu <strong id="translator-saved-count">${state.savedWords.length}</strong></button>
         <div class="dictionary-section-title">Gợi ý từ liên quan</div>
         <div id="dictionary-results" class="dictionary-list"></div>
@@ -758,24 +845,10 @@
       status.textContent = "Đang chuẩn bị bộ dịch trên thiết bị…";
 
       try {
-        if (!("Translator" in self)) throw new Error("translator-unavailable");
-        const availability = await self.Translator.availability({
-          sourceLanguage: direction.sourceLanguage,
-          targetLanguage: direction.targetLanguage
-        });
-        if (availability === "unavailable") throw new Error("language-pair-unavailable");
-        if (availability !== "available") status.textContent = "Đang tải gói ngôn ngữ lần đầu…";
-        const translator = await self.Translator.create({
-          sourceLanguage: direction.sourceLanguage,
-          targetLanguage: direction.targetLanguage,
-          monitor(monitor) {
-            monitor.addEventListener("downloadprogress", event => {
-              status.textContent = `Đang tải gói ngôn ngữ ${Math.round(event.loaded * 100)}%…`;
-            });
-          }
+        const translator = await createTranslator(direction.sourceLanguage, direction.targetLanguage, progress => {
+          status.textContent = `Đang tải gói ngôn ngữ ${progress}%…`;
         });
         const translated = await translator.translate(query);
-        translator.destroy?.();
         showTranslation(translated, direction, "Dịch ngay trên thiết bị");
         status.textContent = "Nội dung không được gửi lên máy chủ.";
       } catch (error) {
