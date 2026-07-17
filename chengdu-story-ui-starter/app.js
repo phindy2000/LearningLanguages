@@ -2,10 +2,12 @@
   "use strict";
 
   const content = window.GAME_CONTENT;
+  const playerDataStore = window.PLAYER_DATA_STORE;
   const STORAGE_KEY = "chengduStory.v1";
 
   const defaultState = {
     profile: null,
+    playerId: null,
     pinyinVisible: true,
     mode: "study",
     speechRate: 0.9,
@@ -20,6 +22,8 @@
   let activeDrawer = null;
   let toastTimer = null;
 
+  if (state.profile && !state.playerId) saveState();
+
   function getChapterProgress() {
     const totalChoices = content.chapter.scenes.filter(scene => scene.choice).length;
     if (!totalChoices) return 100;
@@ -32,7 +36,10 @@
   function loadState() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      return { ...defaultState, ...(parsed || {}) };
+      const restored = { ...defaultState, ...(parsed || {}) };
+      const playerId = restored.playerId || playerDataStore?.getCurrentPlayerId();
+      const progress = playerId ? playerDataStore?.loadProgress(playerId) : null;
+      return { ...restored, ...(progress || {}), playerId: playerId || null };
     } catch (error) {
       console.warn("Không đọc được dữ liệu cũ:", error);
       return { ...defaultState };
@@ -41,7 +48,12 @@
 
   function saveState() {
     try {
+      if (state.profile && playerDataStore) {
+        const account = playerDataStore.ensureAccount(state.profile, state.playerId);
+        state.playerId = account.id;
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      playerDataStore?.saveProgress(state.playerId, state);
     } catch (error) {
       console.info("Không thể lưu localStorage trong ngữ cảnh hiện tại:", error);
     }
@@ -413,7 +425,8 @@
 
   function resetProgress() {
     const keepProfile = state.profile;
-    state = { ...defaultState, profile: keepProfile };
+    const keepPlayerId = state.playerId;
+    state = { ...defaultState, profile: keepProfile, playerId: keepPlayerId };
     saveState();
     closeOverlay();
     renderApp();
@@ -467,6 +480,7 @@
       node.querySelector("#name-error").classList.toggle("hidden", validZh);
       if (!nameVi || !validZh) return;
       state.profile = { nameVi, nameZh };
+      state.playerId = null;
       saveState();
       closeOverlay();
       renderApp();
@@ -834,6 +848,8 @@
               <button class="mode-card ${state.mode === "listening" ? "active" : ""}" data-modal-mode="listening"><span class="mode-icon">🎧</span><strong>Luyện nghe</strong></button>
             </div>
           </div>
+          <div class="form-help">Player ID: <strong>${escapeHtml(state.playerId || "Chưa tạo")}</strong></div>
+          <button class="secondary-button" id="modal-export">Xuất file tiến trình</button>
           <button class="secondary-button" id="modal-reset">Đặt lại tiến độ chương</button>
         </div>
       </section>
@@ -854,6 +870,10 @@
       closeOverlay();
       renderApp();
     }));
+    node.querySelector("#modal-export").addEventListener("click", () => {
+      const exported = playerDataStore?.exportProgress(state.playerId);
+      toast(exported ? `Đã tạo Log_${state.playerId}.js` : "Chưa có tiến trình để xuất.");
+    });
     node.querySelector("#modal-reset").addEventListener("click", resetProgress);
   }
 
@@ -867,7 +887,7 @@
         <div class="drawer-header"><h2 id="overview-title">Tổng quan người chơi</h2><button class="icon-button" data-close aria-label="Đóng">×</button></div>
         <div class="overview-profile">
           <div class="avatar overview-avatar" aria-hidden="true">👩🏻</div>
-          <div><div class="overview-name">${escapeHtml(nameVi)}</div><div class="overview-meta">${escapeHtml(nameZh)} · Thành Đô<br>S01 · C01</div></div>
+          <div><div class="overview-name">${escapeHtml(nameVi)}</div><div class="overview-meta">${escapeHtml(nameZh)} · Thành Đô<br>${escapeHtml(state.playerId || "Chưa có Player ID")} · S01 · C01</div></div>
         </div>
         <div class="progress-label"><span>Tiến độ chương</span><strong>${progress}%</strong></div>
         <div class="progress-track"><div class="progress-value" style="width:${progress}%"></div></div>
