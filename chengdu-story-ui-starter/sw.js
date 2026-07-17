@@ -1,11 +1,11 @@
-const CACHE_NAME = "chengdu-story-ui-v23";
+const CACHE_NAME = "chengdu-story-ui-v24";
 const FILES = [
   "./",
   "./index.html",
-  "./styles.css?v=23",
-  "./account.js?v=23",
-  "./data.js?v=23",
-  "./app.js?v=23",
+  "./styles.css?v=24",
+  "./account.js?v=24",
+  "./data.js?v=24",
+  "./app.js?v=24",
   "./manifest.webmanifest",
   "./assets/app-icon.svg"
 ];
@@ -25,12 +25,12 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+    caches.match(event.request).then(cached => {
+      const updated = fetch(event.request).then(response => {
+        if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
         return response;
-      })
-      .catch(() => caches.match(event.request))
+      }).catch(() => cached);
+      return cached || updated;
+    })
   );
 });

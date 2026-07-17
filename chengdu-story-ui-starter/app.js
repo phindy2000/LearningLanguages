@@ -18,11 +18,10 @@
     activeView: "story"
   };
 
-  let state = loadState();
+  let state = { ...defaultState };
+  let sessionAccount = null;
   let activeDrawer = null;
   let toastTimer = null;
-
-  if (state.profile && !state.playerId) saveState();
 
   function getChapterProgress() {
     const totalChoices = content.chapter.scenes.filter(scene => scene.choice).length;
@@ -33,13 +32,15 @@
     return Math.min(100, Math.round((completedChoices / totalChoices) * 100));
   }
 
-  function loadState() {
+  function loadState(account) {
     try {
-      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      const restored = { ...defaultState, ...(parsed || {}) };
-      const playerId = restored.playerId || playerDataStore?.getCurrentPlayerId();
-      const progress = playerId ? playerDataStore?.loadProgress(playerId) : null;
-      return { ...restored, ...(progress || {}), playerId: playerId || null };
+      const progress = account?.id ? playerDataStore?.loadProgress(account.id) : null;
+      return {
+        ...defaultState,
+        ...(progress || {}),
+        profile: progress?.profile || account?.profile || null,
+        playerId: account?.id || null
+      };
     } catch (error) {
       console.warn("Không đọc được dữ liệu cũ:", error);
       return { ...defaultState };
@@ -50,7 +51,7 @@
     try {
       if (state.profile && playerDataStore) {
         const account = playerDataStore.ensureAccount(state.profile, state.playerId);
-        state.playerId = account.id;
+        if (account) state.playerId = account.id;
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       playerDataStore?.saveProgress(state.playerId, state);
@@ -66,6 +67,108 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function renderAuth(preferredMode) {
+    const hasAccounts = Boolean(window.ACCOUNT_FILE?.accounts?.length);
+    const mode = preferredMode || (hasAccounts ? "login" : "register");
+    const isRegister = mode === "register";
+    const app = document.getElementById("app");
+    app.innerHTML = `
+      <main class="auth-screen">
+        <section class="auth-intro" aria-label="Giới thiệu trò chơi">
+          <div class="auth-brand-mark">今</div>
+          <div class="auth-eyebrow">成都生活 · Học qua cốt truyện</div>
+          <h1>${escapeHtml(content.meta.titleZh)}</h1>
+          <p>Bắt đầu cuộc sống mới tại Thành Đô, trò chuyện với NPC và học tiếng Trung trong từng lựa chọn.</p>
+          <div class="auth-scene-card" aria-hidden="true">
+            <span class="auth-chat auth-chat-left">你回来了吗？</span>
+            <span class="auth-chat auth-chat-right">刚回来，我需要买点东西。</span>
+          </div>
+        </section>
+        <section class="auth-panel">
+          <div class="auth-card">
+            <div class="auth-mobile-brand">今天也有新消息</div>
+            <div class="auth-tabs" role="tablist" aria-label="Tài khoản">
+              <button class="auth-tab ${isRegister ? "active" : ""}" data-auth-mode="register" role="tab" aria-selected="${isRegister}">Tạo tài khoản</button>
+              <button class="auth-tab ${!isRegister ? "active" : ""}" data-auth-mode="login" role="tab" aria-selected="${!isRegister}">Đăng nhập</button>
+            </div>
+            <div class="auth-heading">
+              <h2>${isRegister ? "Tạo hồ sơ người chơi" : "Chào mừng trở lại"}</h2>
+              <p>${isRegister ? "Dữ liệu được lưu riêng trên thiết bị này." : "Đăng nhập để tải lại đúng tiến trình của bạn."}</p>
+            </div>
+            <form id="auth-form" class="auth-form" data-mode="${mode}">
+              <label class="auth-field"><span>Email</span><input name="email" type="email" autocomplete="email" placeholder="ban@example.com" required /></label>
+              ${isRegister ? `<label class="auth-field"><span>Tên tài khoản</span><input name="username" autocomplete="username" placeholder="Tên hiển thị trong game" minlength="2" maxlength="30" required /></label>` : ""}
+              <label class="auth-field"><span>Mật khẩu</span><input name="password" type="password" autocomplete="${isRegister ? "new-password" : "current-password"}" placeholder="Tối thiểu 6 ký tự" minlength="6" required /></label>
+              ${isRegister ? `<label class="auth-field"><span>Nhập lại mật khẩu</span><input name="confirmPassword" type="password" autocomplete="new-password" placeholder="Nhập lại mật khẩu" minlength="6" required /></label>` : ""}
+              <div class="auth-error hidden" id="auth-error" role="alert"></div>
+              <button class="primary-button auth-submit" type="submit">${isRegister ? "Tạo tài khoản và vào game" : "Đăng nhập và tải tiến trình"}</button>
+            </form>
+            <p class="auth-local-note">Lưu cục bộ · Chưa đồng bộ giữa các thiết bị</p>
+          </div>
+        </section>
+      </main>`;
+    app.querySelectorAll("[data-auth-mode]").forEach(button => button.addEventListener("click", () => renderAuth(button.dataset.authMode)));
+    app.querySelector("#auth-form").addEventListener("submit", handleAuthSubmit);
+  }
+
+  async function handleAuthSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const submit = form.querySelector("button[type='submit']");
+    const errorNode = form.querySelector("#auth-error");
+    const values = new FormData(form);
+    const mode = form.dataset.mode;
+    const password = String(values.get("password") || "");
+    const confirmPassword = String(values.get("confirmPassword") || "");
+    errorNode.classList.add("hidden");
+    if (mode === "register" && password !== confirmPassword) {
+      errorNode.textContent = "Hai lần nhập mật khẩu chưa giống nhau.";
+      errorNode.classList.remove("hidden");
+      return;
+    }
+    submit.disabled = true;
+    submit.textContent = mode === "register" ? "Đang tạo tài khoản…" : "Đang đăng nhập…";
+    try {
+      sessionAccount = mode === "register"
+        ? await playerDataStore.register({ email: values.get("email"), username: values.get("username"), password })
+        : await playerDataStore.login({ email: values.get("email"), password });
+      await prepareAndEnterGame();
+    } catch (error) {
+      errorNode.textContent = error.message || "Chưa thể mở tài khoản. Vui lòng thử lại.";
+      errorNode.classList.remove("hidden");
+      submit.disabled = false;
+      submit.textContent = mode === "register" ? "Tạo tài khoản và vào game" : "Đăng nhập và tải tiến trình";
+    }
+  }
+
+  function renderLoading(progress, status) {
+    document.getElementById("app").innerHTML = `
+      <main class="loading-screen" aria-live="polite"><div class="loading-card">
+        <div class="loading-symbol">今</div><div class="loading-title">Đang chuẩn bị Thành Đô</div>
+        <div class="loading-status">${escapeHtml(status)}</div>
+        <div class="loading-track"><div class="loading-value" style="width:${progress}%"></div></div>
+        <div class="loading-percent">${progress}%</div>
+      </div></main>`;
+  }
+
+  async function prepareAndEnterGame() {
+    renderLoading(8, "Đang đọc tiến trình người chơi");
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+      await navigator.serviceWorker.register("./sw.js").catch(error => console.info("Service Worker chưa hoạt động:", error));
+    }
+    await playerDataStore.prepareGameAssets((progress, status) => renderLoading(Math.max(12, progress), status));
+    state = loadState(sessionAccount);
+    renderLoading(100, "Sẵn sàng vào chương 1");
+    await new Promise(resolve => setTimeout(resolve, 260));
+    renderApp();
+  }
+
+  async function bootGame() {
+    sessionAccount = playerDataStore?.getSessionAccount();
+    if (!sessionAccount) return renderAuth();
+    await prepareAndEnterGame();
   }
 
   function toast(message) {
@@ -848,9 +951,13 @@
               <button class="mode-card ${state.mode === "listening" ? "active" : ""}" data-modal-mode="listening"><span class="mode-icon">🎧</span><strong>Luyện nghe</strong></button>
             </div>
           </div>
-          <div class="form-help">Player ID: <strong>${escapeHtml(state.playerId || "Chưa tạo")}</strong></div>
+          <div class="account-summary">
+            <span>Đang chơi với</span><strong>${escapeHtml(sessionAccount?.username || state.profile?.nameVi || "Người chơi")}</strong>
+            <small>${escapeHtml(sessionAccount?.email || "Tài khoản cục bộ")} · ${escapeHtml(state.playerId || "Chưa tạo Player ID")}</small>
+          </div>
           <button class="secondary-button" id="modal-export">Xuất file tiến trình</button>
           <button class="secondary-button" id="modal-reset">Đặt lại tiến độ chương</button>
+          <button class="text-button logout-button" id="modal-logout">Đăng xuất</button>
         </div>
       </section>
     `);
@@ -875,6 +982,14 @@
       toast(exported ? `Đã tạo Log_${state.playerId}.js` : "Chưa có tiến trình để xuất.");
     });
     node.querySelector("#modal-reset").addEventListener("click", resetProgress);
+    node.querySelector("#modal-logout").addEventListener("click", () => {
+      saveState();
+      playerDataStore?.logout();
+      sessionAccount = null;
+      state = { ...defaultState };
+      closeOverlay();
+      renderAuth("login");
+    });
   }
 
   function openMenu() {
@@ -926,9 +1041,9 @@
   }
 
   window.addEventListener("DOMContentLoaded", () => {
-    renderApp();
-    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-      navigator.serviceWorker.register("./sw.js").catch(error => console.info("Service Worker chưa hoạt động:", error));
-    }
+    bootGame().catch(error => {
+      console.error("Không thể khởi động trò chơi:", error);
+      renderAuth();
+    });
   });
 })();
